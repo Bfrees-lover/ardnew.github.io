@@ -1,0 +1,6 @@
+{
+  "scripts": {
+    "dev": "NODE_ENV=development your-dev-command",
+    "build": "NODE_ENV=production your-build-command"
+  }
+} 

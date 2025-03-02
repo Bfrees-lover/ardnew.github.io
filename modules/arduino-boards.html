@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Платы Arduino</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/themes/prism-okaidia.min.css" rel="stylesheet" />
+    <style>
+        pre[class*="language-"] {
+            padding: 1.5em;
+            margin: 1em 0;
+            font-size: 16px;
+            border-radius: 8px;
+            background: #e8e8e8 !important;
+            border: 1px solid #ddd;
+        }
+        
+        code[class*="language-"] {
+            text-shadow: none;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            line-height: 1.5;
+            color: #333 !important;
+        }
+
+        /* Arduino IDE-like syntax highlighting */
+        .token.keyword {
+            color: #00979C !important;
+        }
+
+        .token.function {
+            color: #D35400 !important;
+        }
+
+        .token.number {
+            color: #00979C !important;
+        }
+
+        .token.comment {
+            color: #757575 !important;
+        }
+
+        .token.string {
+            color: #7F8C8D !important;
+        }
+
+        .token.preprocessor {
+            color: #728E00 !important;
+        }
+        
+        .board-card {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            background-color: #f9f9f9;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .board-card h3 {
+            margin-top: 0;
+            color: #00979C;
+            border-bottom: 2px solid #00979C;
+            padding-bottom: 8px;
+        }
+        
+        .board-specs {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .board-specs div {
+            padding: 5px;
+        }
+        
+        .board-specs strong {
+            color: #D35400;
+        }
+        
+        .board-image {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 15px auto;
+            border-radius: 4px;
+        }
+        
+        .board-uses {
+            background-color: #e8f4f4;
+            padding: 10px 15px;
+            border-radius: 4px;
+            margin-top: 15px;
+        }
+        
+        .board-uses h4 {
+            margin-top: 0;
+            color: #00979C;
+        }
+        
+        .board-uses ul {
+            margin-bottom: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Платы Arduino</h1>
+            <p>Обзор различных плат Arduino, их характеристики и применение</p>
+        </header>
+        
+        <main>
+            <section>
+                <h2>Введение</h2>
+                <p>Arduino — это семейство плат для разработки электронных проектов, которые сочетают в себе простоту использования и мощные возможности. Каждая плата Arduino имеет свои особенности, преимущества и подходит для разных типов проектов. В этом модуле мы рассмотрим наиболее популярные платы Arduino и их характеристики.</p>
+            </section>
+            
+            <section>
+                <h2>Популярные платы Arduino</h2>
+                
+                <div class="board-card">
+                    <h3>Arduino Uno</h3>
+                    <p>Arduino Uno — самая популярная и широко используемая плата в семействе Arduino. Это отличный выбор для начинающих и для большинства стандартных проектов.</p>
+                    <img src="../images/arduino-uno.jpg" alt="Arduino Uno" class="board-image">
+                    
+                    <div class="board-specs">
+                        <div><strong>Микроконтроллер:</strong> ATmega328P</div>
+                        <div><strong>Рабочее напряжение:</strong> 5В</div>
+                        <div><strong>Цифровые входы/выходы:</strong> 14 (из них 6 с ШИМ)</div>
+                        <div><strong>Аналоговые входы:</strong> 6</div>
+                        <div><strong>Флеш-память:</strong> 32 КБ</div>
+                        <div><strong>SRAM:</strong> 2 КБ</div>
+                        <div><strong>EEPROM:</strong> 1 КБ</div>
+                        <div><strong>Тактовая частота:</strong> 16 МГц</div>
+                    </div>
+                    
+                    <div class="board-uses">
+                        <h4>Идеально подходит для:</h4>
+                        <ul>
+                            <li>Обучения основам электроники и программирования</li>
+                            <li>Простых проектов с датчиками и исполнительными механизмами</li>
+                            <li>Прототипирования устройств</li>
+                            <li>Домашней автоматизации</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="board-card">
+                    <h3>Arduino Nano</h3>
+                    <p>Arduino Nano — компактная версия Arduino Uno с аналогичными характеристиками, но в меньшем форм-факторе. Идеально подходит для проектов с ограниченным пространством.</p>
+                    <img src="../images/arduino-nano.jpg" alt="Arduino Nano" class="board-image">
+                    
+                    <div class="board-specs">
+                        <div><strong>Микроконтроллер:</strong> ATmega328P</div>
+                        <div><strong>Рабочее напряжение:</strong> 5В</div>
+                        <div><strong>Цифровые входы/выходы:</strong> 14 (из них 6 с ШИМ)</div>
+                        <div><strong>Аналоговые входы:</strong> 8</div>
+                        <div><strong>Флеш-память:</strong> 32 КБ</div>
+                        <div><strong>SRAM:</strong> 2 КБ</div>
+                        <div><strong>EEPROM:</strong> 1 КБ</div>
+                        <div><strong>Тактовая частота:</strong> 16 МГц</div>
+                    </div>
+                    
+                    <div class="board-uses">
+                        <h4>Идеально подходит для:</h4>
+                        <ul>
+                            <li>Компактных устройств</li>
+                            <li>Носимой электроники</li>
+                            <li>Встраиваемых систем</li>
+                            <li>Проектов, где важен размер платы</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="board-card">
+                    <h3>Arduino Mega 2560</h3>
+                    <p>Arduino Mega 2560 — более мощная плата с большим количеством входов/выходов и памяти. Подходит для сложных проектов, требующих большого количества подключений.</p>
+                    <img src="../images/arduino-mega.jpg" alt="Arduino Mega 2560" class="board-image">
+                    
+                    <div class="board-specs">
+                        <div><strong>Микроконтроллер:</strong> ATmega2560</div>
+                        <div><strong>Рабочее напряжение:</strong> 5В</div>
+                        <div><strong>Цифровые входы/выходы:</strong> 54 (из них 15 с ШИМ)</div>
+                        <div><strong>Аналоговые входы:</strong> 16</div>
+                        <div><strong>Флеш-память:</strong> 256 КБ</div>
+                        <div><strong>SRAM:</strong> 8 КБ</div>
+                        <div><strong>EEPROM:</strong> 4 КБ</div>
+                        <div><strong>Тактовая частота:</strong> 16 МГц</div>
+                    </div>
+                    
+                    <div class="board-uses">
+                        <h4>Идеально подходит для:</h4>
+                        <ul>
+                            <li>Сложных проектов с множеством датчиков и исполнительных механизмов</li>
+                            <li>3D-принтеров и ЧПУ-станков</li>
+                            <li>Роботов с множеством сервоприводов</li>
+                            <li>Проектов с большими программами</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="board-card">
+                    <h3>Arduino Leonardo</h3>
+                    <p>Arduino Leonardo использует микроконтроллер ATmega32u4, который имеет встроенную поддержку USB. Это позволяет плате эмулировать клавиатуру, мышь и другие USB-устройства.</p>
+                    <img src="../images/arduino-leonardo.jpg" alt="Arduino Leonardo" class="board-image">
+                    
+                    <div class="board-specs">
+                        <div><strong>Микроконтроллер:</strong> ATmega32u4</div>
+                        <div><strong>Рабочее напряжение:</strong> 5В</div>
+                        <div><strong>Цифровые входы/выходы:</strong> 20 (из них 7 с ШИМ)</div>
+                        <div><strong>Аналоговые входы:</strong> 12</div>
+                        <div><strong>Флеш-память:</strong> 32 КБ</div>
+                        <div><strong>SRAM:</strong> 2.5 КБ</div>
+                        <div><strong>EEPROM:</strong> 1 КБ</div>
+                        <div><strong>Тактовая частота:</strong> 16 МГц</div>
+                    </div>
+                    
+                    <div class="board-uses">
+                        <h4>Идеально подходит для:</h4>
+                        <ul>
+                            <li>Проектов, требующих эмуляции USB-устройств (клавиатура, мышь)</li>
+                            <li>MIDI-контроллеров</li>
+                            <li>Игровых контроллеров</li>
+                            <li>Проектов с прямым взаимодействием с компьютером</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="board-card">
+                    <h3>Arduino Due</h3>
+                    <p>Arduino Due — первая плата Arduino на базе 32-битного ARM-микроконтроллера. Она обеспечивает значительно более высокую производительность по сравнению с 8-битными платами.</p>
+                    <img src="../images/arduino-due.jpg" alt="Arduino Due" class="board-image">
+                    
+                    <div class="board-specs">
+                        <div><strong>Микроконтроллер:</strong> AT91SAM3X8E (ARM Cortex-M3)</div>
+                        <div><strong>Рабочее напряжение:</strong> 3.3В</div>
+                        <div><strong>Цифровые входы/выходы:</strong> 54 (из них 12 с ШИМ)</div>
+                        <div><strong>Аналоговые входы:</strong> 12</div>
+                        <div><strong>Аналоговые выходы (ЦАП):</strong> 2</div>
+                        <div><strong>Флеш-память:</strong> 512 КБ</div>
+                        <div><strong>SRAM:</strong> 96 КБ</div>
+                        <div><strong>Тактовая частота:</strong> 84 МГц</div>
+                    </div>
+                    
+                    <div class="board-uses">
+                        <h4>Идеально подходит для:</h4>
+                        <ul>
+                            <li>Проектов, требующих высокой вычислительной мощности</li>
+                            <li>Обработки аудио и видео</li>
+                            <li>Сложных алгоритмов и вычислений</li>
+                            <li>Проектов с аналоговыми выходами (ЦАП)</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="board-card">
+                    <h3>Arduino MKR WiFi 1010</h3>
+                    <p>Arduino MKR WiFi 1010 — компактная плата с встроенным WiFi-модулем, предназначенная для IoT-проектов и подключения к интернету.</p>
+                    <img src="../images/arduino-mkr-wifi.jpg" alt="Arduino MKR WiFi 1010" class="board-image">
+                    
+                    <div class="board-specs">
+                        <div><strong>Микроконтроллер:</strong> SAMD21 Cortex-M0+</div>
+                        <div><strong>WiFi-модуль:</strong> u-blox NINA-W10</div>
+                        <div><strong>Рабочее напряжение:</strong> 3.3В</div>
+                        <div><strong>Цифровые входы/выходы:</strong> 8</div>
+                        <div><strong>Аналоговые входы:</strong> 7</div>
+                        <div><strong>Флеш-память:</strong> 256 КБ</div>
+                        <div><strong>SRAM:</strong> 32 КБ</div>
+                        <div><strong>Тактовая частота:</strong> 48 МГц</div>
+                    </div>
+                    
+                    <div class="board-uses">
+                        <h4>Идеально подходит для:</h4>
+                        <ul>
+                            <li>IoT-проектов</li>
+                            <li>Устройств, подключаемых к интернету</li>
+                            <li>Беспроводных датчиков</li>
+                            <li>Умного дома</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+            
+            <section>
+                <h2>Выбор платы Arduino для вашего проекта</h2>
+                <p>При выборе платы Arduino для вашего проекта следует учитывать несколько факторов:</p>
+                <ul>
+                    <li><strong>Количество входов/выходов:</strong> Сколько датчиков и исполнительных механизмов вы планируете подключить?</li>
+                    <li><strong>Требуемая вычислительная мощность:</strong> Насколько сложные вычисления будет выполнять ваше устройство?</li>
+                    <li><strong>Размер:</strong> Насколько компактным должно быть ваше устройство?</li>
+                    <li><strong>Потребление энергии:</strong> Будет ли устройство работать от батареи?</li>
+                    <li><strong>Специальные функции:</strong> Нужен ли WiFi, Bluetooth, USB-эмуляция и т.д.?</li>
+                    <li><strong>Бюджет:</strong> Более продвинутые платы обычно стоят дороже.</li>
+                </ul>
+                <p>Для начинающих Arduino Uno остается лучшим выбором благодаря обширной документации, совместимости с большинством шилдов и простоте использования.</p>
+            </section>
+        </main>
+        
+        <footer>
+            <p>&copy; 2023 ArdLearn. Все права защищены.</p>
+        </footer>
+    </div>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/components/prism-c.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/components/prism-cpp.min.js"></script>
+</body>
+</html> 

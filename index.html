@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arduino обучение</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <!-- Добавляем стили для темной темы -->
+    <style>
+        :root {
+            --bg-color: #ffffff;
+            --text-color: #333333;
+            --card-bg: #f9f9f9;
+            --card-border: #e0e0e0;
+            --header-bg: #4285f4;
+            --header-text: #ffffff;
+            --link-color: #4285f4;
+        }
+        
+        body.dark-theme {
+            --bg-color: #121212;
+            --text-color: #e0e0e0;
+            --card-bg: #1e1e1e;
+            --card-border: #444444;
+            --header-bg: #1a237e;
+            --header-text: #ffffff;
+            --link-color: #90caf9;
+        }
+        
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            transition: background-color 0.3s, color 0.3s;
+        }
+        
+        .header {
+            background-color: var(--header-bg);
+            color: var(--header-text);
+        }
+        
+        .module-card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--card-border);
+        }
+        
+        .module-card a {
+            color: var(--link-color);
+        }
+        
+        #theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: var(--header-bg);
+            color: var(--header-text);
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            cursor: pointer;
+            font-size: 20px;
+            z-index: 1000;
+        }
+        
+        .admin-login {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            background-color: var(--header-bg);
+            color: var(--header-text);
+            border: none;
+            border-radius: 4px;
+            padding: 8px 16px;
+            cursor: pointer;
+            z-index: 1000;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <h1>Изучение Arduino</h1>
+        <p>Выберите модуль для начала обучения</p>
+    </header>
+
+    <div class="modules-container" id="modules-container">
+        <!-- Модули будут загружаться из базы данных через JavaScript -->
+        <div class="loading">Загрузка модулей...</div>
+    </div>
+    
+    <!-- Кнопка переключения темы -->
+    <button id="theme-toggle" onclick="toggleTheme()">🌙</button>
+    
+    <!-- Ссылка на страницу входа администратора -->
+    <a href="admin/login.html" class="admin-login">Вход для администратора</a>
+    
+    <div class="corner-icons">
+        <div class="lightning bounce"></div>
+        <a href="https://vk.com/my_wild_cassandra" target="_blank" rel="noopener">
+            <div class="question-mark bounce">?</div>
+        </a>
+    </div>
+
+    <!-- Скрипт для загрузки модулей и управления темой -->
+    <script>
+        // Функция для переключения темы
+        function toggleTheme() {
+            const body = document.body;
+            const themeBtn = document.getElementById('theme-toggle');
+            
+            if (body.classList.contains('dark-theme')) {
+                body.classList.remove('dark-theme');
+                themeBtn.textContent = '🌙';
+                localStorage.setItem('theme', 'light');
+            } else {
+                body.classList.add('dark-theme');
+                themeBtn.textContent = '☀️';
+                localStorage.setItem('theme', 'dark');
+            }
+        }
+        
+        // Функция для установки начальной темы
+        function setInitialTheme() {
+            const savedTheme = localStorage.getItem('theme');
+            const themeBtn = document.getElementById('theme-toggle');
+            
+            if (savedTheme === 'dark') {
+                document.body.classList.add('dark-theme');
+                themeBtn.textContent = '☀️';
+            }
+        }
+        
+        // Функция для загрузки модулей из базы данных
+        async function loadModules() {
+            try {
+                const response = await fetch('api/modules.php');
+                if (!response.ok) {
+                    throw new Error('Ошибка загрузки модулей');
+                }
+                
+                const modules = await response.json();
+                const container = document.getElementById('modules-container');
+                container.innerHTML = ''; // Очищаем контейнер
+                
+                modules.forEach(module => {
+                    const moduleCard = document.createElement('div');
+                    moduleCard.className = 'module-card';
+                    moduleCard.innerHTML = `
+                        <h2>${module.title}</h2>
+                        <p>${module.description}</p>
+                        <a href="modules/${module.url}">Начать обучение</a>
+                    `;
+                    container.appendChild(moduleCard);
+                });
+            } catch (error) {
+                console.error('Ошибка:', error);
+                document.getElementById('modules-container').innerHTML = `
+                    <div class="error">Не удалось загрузить модули. Пожалуйста, попробуйте позже.</div>
+                `;
+            }
+        }
+        
+        // Вызываем функции при загрузке страницы
+        document.addEventListener('DOMContentLoaded', () => {
+            setInitialTheme();
+            loadModules();
+        });
+    </script>
+</body>
+</html>

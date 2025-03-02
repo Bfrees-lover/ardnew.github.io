@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Сенсоры и датчики Arduino</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/themes/prism-okaidia.min.css" rel="stylesheet" />
+    <style>
+        pre[class*="language-"] {
+            padding: 1.5em;
+            margin: 1em 0;
+            font-size: 16px;
+            border-radius: 8px;
+            background: #e8e8e8 !important;
+            border: 1px solid #ddd;
+        }
+        
+        code[class*="language-"] {
+            text-shadow: none;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            line-height: 1.5;
+            color: #333 !important;
+        }
+
+        /* Arduino IDE-like syntax highlighting */
+        .token.keyword {
+            color: #00979C !important;
+        }
+
+        .token.function {
+            color: #D35400 !important;
+        }
+
+        .token.number {
+            color: #00979C !important;
+        }
+
+        .token.comment {
+            color: #757575 !important;
+        }
+
+        .token.string {
+            color: #7F8C8D !important;
+        }
+
+        .token.preprocessor {
+            color: #728E00 !important;
+        }
+
+        .token.constant {
+            color: #00979C !important;
+        }
+
+        .token.operator {
+            color: #434F54 !important;
+        }
+
+        .content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        section {
+            margin-bottom: 40px;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <a href="../index.html" class="back-button">← Назад</a>
+        <h1>Сенсоры и датчики</h1>
+        <p>Работа с различными типами датчиков</p>
+    </header>
+
+    <div class="content">
+        <section>
+            <h2>Датчик температуры и влажности DHT11/DHT22</h2>
+            <p>Пример работы с датчиком температуры и влажности:</p>
+            
+            <div class="code-block">
+                <h3>Чтение температуры и влажности</h3>
+                <pre class="language-cpp"><code>#include <DHT.h>
+
+#define DHTPIN 2        // Пин подключения датчика
+#define DHTTYPE DHT11   // Тип датчика (DHT11 или DHT22)
+
+DHT dht(DHTPIN, DHTTYPE);
+
+void setup() {
+    Serial.begin(9600);
+    dht.begin();
+}
+
+void loop() {
+    delay(2000);  // Задержка между измерениями
+    
+    float h = dht.readHumidity();     // Чтение влажности
+    float t = dht.readTemperature();  // Чтение температуры
+    
+    // Проверка корректности данных
+    if (isnan(h) || isnan(t)) {
+        Serial.println("Ошибка чтения датчика!");
+        return;
+    }
+    
+    Serial.print("Влажность: ");
+    Serial.print(h);
+    Serial.print("%\t");
+    Serial.print("Температура: ");
+    Serial.print(t);
+    Serial.println("°C");
+}</code></pre>
+            </div>
+
+            <h2>Ультразвуковой датчик расстояния HC-SR04</h2>
+            <p>Измерение расстояния с помощью ультразвукового датчика:</p>
+            
+            <div class="code-block">
+                <h3>Измерение расстояния</h3>
+                <pre class="language-cpp"><code>const int trigPin = 9;   // Пин Trig
+const int echoPin = 10;  // Пин Echo
+
+void setup() {
+    Serial.begin(9600);
+    pinMode(trigPin, OUTPUT);
+    pinMode(echoPin, INPUT);
+}
+
+void loop() {
+    // Отправка ультразвукового импульса
+    digitalWrite(trigPin, LOW);
+    delayMicroseconds(2);
+    digitalWrite(trigPin, HIGH);
+    delayMicroseconds(10);
+    digitalWrite(trigPin, LOW);
+    
+    // Измерение длительности эха
+    long duration = pulseIn(echoPin, HIGH);
+    
+    // Расчет расстояния
+    float distance = duration * 0.034 / 2;
+    
+    Serial.print("Расстояние: ");
+    Serial.print(distance);
+    Serial.println(" см");
+    
+    delay(500);
+}</code></pre>
+            </div>
+
+            <h2>Датчик движения PIR HC-SR501</h2>
+            <p>Обнаружение движения с помощью PIR датчика:</p>
+            
+            <div class="code-block">
+                <h3>Детектор движения</h3>
+                <pre class="language-cpp"><code>const int pirPin = 2;     // Пин датчика движения
+const int ledPin = 13;    // Пин светодиода
+int pirState = LOW;       // Начальное состояние датчика
+
+void setup() {
+    pinMode(ledPin, OUTPUT);
+    pinMode(pirPin, INPUT);
+    Serial.begin(9600);
+}
+
+void loop() {
+    int val = digitalRead(pirPin);  // Чтение датчика
+    
+    if (val == HIGH) {
+        digitalWrite(ledPin, HIGH);  // Включаем светодиод
+        
+        if (pirState == LOW) {
+            Serial.println("Обнаружено движение!");
+            pirState = HIGH;
+        }
+    } else {
+        digitalWrite(ledPin, LOW);  // Выключаем светодиод
+        
+        if (pirState == HIGH) {
+            Serial.println("Движение прекратилось");
+            pirState = LOW;
+        }
+    }
+}</code></pre>
+            </div>
+
+            <h2>Фоторезистор</h2>
+            <p>Измерение уровня освещенности:</p>
+            
+            <div class="code-block">
+                <h3>Датчик освещенности</h3>
+                <pre class="language-cpp"><code>const int lightPin = A0;   // Пин фоторезистора
+const int ledPin = 9;     // Пин светодиода
+const int threshold = 500; // Пороговое значение освещенности
+
+void setup() {
+    Serial.begin(9600);
+    pinMode(ledPin, OUTPUT);
+}
+
+void loop() {
+    int lightLevel = analogRead(lightPin);
+    Serial.print("Уровень освещенности: ");
+    Serial.println(lightLevel);
+    
+    // Если темно - включаем светодиод
+    if (lightLevel < threshold) {
+        digitalWrite(ledPin, HIGH);
+    } else {
+        digitalWrite(ledPin, LOW);
+    }
+    
+    delay(100);
+}</code></pre>
+            </div>
+        </section>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/components/prism-clike.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/components/prism-c.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/components/prism-cpp.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', (event) => {
+            Prism.highlightAll();
+        });
+    </script>
+</body>
+</html> 

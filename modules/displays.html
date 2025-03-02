@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Дисплеи и индикация Arduino</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/themes/prism-okaidia.min.css" rel="stylesheet" />
+    <style>
+        pre[class*="language-"] {
+            padding: 1.5em;
+            margin: 1em 0;
+            font-size: 16px;
+            border-radius: 8px;
+            background: #e8e8e8 !important;  /* Более тёмный серый фон */
+            border: 1px solid #ddd;         /* Добавим тонкую рамку */
+        }
+        
+        code[class*="language-"] {
+            text-shadow: none;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            line-height: 1.5;
+            color: #333 !important;
+        }
+
+        /* Arduino IDE-like syntax highlighting */
+        .token.keyword {
+            color: #00979C !important;
+        }
+
+        .token.function {
+            color: #D35400 !important;
+        }
+
+        .token.number {
+            color: #00979C !important;
+        }
+
+        .token.comment {
+            color: #757575 !important;  /* Немного темнее для лучшей читаемости */
+        }
+
+        .token.string {
+            color: #7F8C8D !important;
+        }
+
+        .token.preprocessor {
+            color: #728E00 !important;
+        }
+
+        .token.constant {
+            color: #00979C !important;
+        }
+
+        .token.operator {
+            color: #434F54 !important;
+        }
+
+        .template-card {
+            background: #f8f9fa;
+            margin-bottom: 30px;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .template-card h2 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+
+        .template-card p {
+            color: #666;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <a href="../index.html" class="back-button">← Назад</a>
+        <h1>Дисплеи и индикация</h1>
+        <p>Работа с различными типами дисплеев и индикаторов</p>
+    </header>
+
+    <div class="content">
+        <section>
+            <h2>LCD дисплей (16x2)</h2>
+            <p>Базовый пример работы с LCD дисплеем:</p>
+            
+            <div class="code-block">
+                <h3>Вывод текста на LCD</h3>
+                <pre class="language-cpp"><code>#include <LiquidCrystal.h>
+
+// Инициализация пинов (RS, E, D4, D5, D6, D7)
+LiquidCrystal lcd(12, 11, 5, 4, 3, 2);
+
+void setup() {
+    lcd.begin(16, 2);  // Размер дисплея 16x2
+    lcd.print("Hello, Arduino!");
+}
+
+void loop() {
+    lcd.setCursor(0, 1);  // Переход на вторую строку
+    lcd.print("Time: ");
+    lcd.print(millis() / 1000);
+    lcd.print(" sec");
+    delay(1000);
+}</code></pre>
+            </div>
+
+            <h2>7-сегментный индикатор</h2>
+            <p>Управление 7-сегментным индикатором:</p>
+            
+            <div class="code-block">
+                <h3>Вывод цифр на индикатор</h3>
+                <pre class="language-cpp"><code>// Пины для сегментов (a-g)
+const int segmentPins[] = {2, 3, 4, 5, 6, 7, 8};
+
+// Массив для отображения цифр (0-9)
+const byte digits[10][7] = {
+    {1,1,1,1,1,1,0},  // 0
+    {0,1,1,0,0,0,0},  // 1
+    {1,1,0,1,1,0,1},  // 2
+    {1,1,1,1,0,0,1},  // 3
+    {0,1,1,0,0,1,1},  // 4
+    {1,0,1,1,0,1,1},  // 5
+    {1,0,1,1,1,1,1},  // 6
+    {1,1,1,0,0,0,0},  // 7
+    {1,1,1,1,1,1,1},  // 8
+    {1,1,1,1,0,1,1}   // 9
+};
+
+void setup() {
+    // Настройка всех пинов как выходов
+    for (int i = 0; i < 7; i++) {
+        pinMode(segmentPins[i], OUTPUT);
+    }
+}
+
+void loop() {
+    // Отображение цифр от 0 до 9
+    for (int digit = 0; digit < 10; digit++) {
+        displayDigit(digit);
+        delay(1000);
+    }
+}
+
+void displayDigit(int digit) {
+    for (int i = 0; i < 7; i++) {
+        digitalWrite(segmentPins[i], digits[digit][i]);
+    }
+}</code></pre>
+            </div>
+
+            <h2>OLED дисплей</h2>
+            <p>Работа с OLED дисплеем на базе SSD1306:</p>
+            
+            <div class="code-block">
+                <h3>Вывод текста и графики на OLED</h3>
+                <pre class="language-cpp"><code>#include <Wire.h>
+#include <Adafruit_GFX.h>
+#include <Adafruit_SSD1306.h>
+
+#define SCREEN_WIDTH 128
+#define SCREEN_HEIGHT 64
+#define OLED_RESET -1
+
+Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
+
+void setup() {
+    if(!display.begin(SSD1306_SWITCHCAPVCC, 0x3C)) {
+        Serial.println("Ошибка инициализации дисплея");
+        for(;;);
+    }
+
+    display.clearDisplay();
+    display.setTextSize(1);
+    display.setTextColor(WHITE);
+    display.setCursor(0,0);
+    
+    // Вывод текста
+    display.println("Hello, Arduino!");
+    
+    // Рисование фигур
+    display.drawRect(0, 20, 40, 20, WHITE);
+    display.fillCircle(80, 30, 10, WHITE);
+    
+    display.display();
+}
+
+void loop() {
+    // Анимация точки
+    for(int i = 0; i < SCREEN_WIDTH; i++) {
+        display.clearDisplay();
+        display.drawPixel(i, 32, WHITE);
+        display.display();
+        delay(50);
+    }
+}</code></pre>
+            </div>
+
+            <h2>Матрица светодиодов 8x8</h2>
+            <p>Управление светодиодной матрицей через MAX7219:</p>
+            
+            <div class="code-block">
+                <h3>Бегущая строка на матрице</h3>
+                <pre class="language-cpp"><code>#include <LedControl.h>
+
+// Пины подключения: DIN, CLK, CS, количество устройств
+LedControl lc = LedControl(12, 11, 10, 1);
+
+// Определение символа "A" (5x7)
+byte A[5] = {
+    B01110000,
+    B10001000,
+    B11111000,
+    B10001000,
+    B10001000
+};
+
+void setup() {
+    lc.shutdown(0, false);  // Включаем матрицу
+    lc.setIntensity(0, 8);  // Устанавливаем яркость (0-15)
+    lc.clearDisplay(0);     // Очищаем дисплей
+}
+
+void loop() {
+    // Отображаем букву "A"
+    for(int col = 0; col < 5; col++) {
+        lc.setColumn(0, col, A[col]);
+    }
+    delay(1000);
+    
+    // Очищаем дисплей
+    lc.clearDisplay(0);
+    delay(1000);
+}</code></pre>
+            </div>
+        </section>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/components/prism-clike.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/components/prism-c.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/components/prism-cpp.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', (event) => {
+            Prism.highlightAll();
+        });
+    </script>
+</body>
+</html> 

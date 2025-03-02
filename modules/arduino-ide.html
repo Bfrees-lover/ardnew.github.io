@@ -1,0 +1,1205 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arduino IDE Online</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/theme/monokai.min.css" rel="stylesheet">
+    <style>
+        .ide-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .code-editor {
+            background: #272822;
+            border-radius: 10px;
+            padding: 10px;
+        }
+
+        .simulation-view {
+            background: #f0f0f0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin: 10px 0;
+            position: relative;
+            min-height: 600px;
+        }
+
+        .CodeMirror {
+            height: 400px;
+            border-radius: 5px;
+        }
+
+        .control-panel {
+            margin-top: 10px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .run-btn {
+            background: #4CAF50;
+        }
+
+        .stop-btn {
+            background: #f44336;
+        }
+
+        .save-btn {
+            background: #2196F3;
+        }
+
+        .wire-info {
+            background: #f8f8f8;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+
+        .wire-info ol {
+            margin-left: 20px;
+            margin-top: 10px;
+        }
+
+        .wire-info li {
+            margin: 5px 0;
+        }
+
+        #simulation-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        .lightning {
+            position: absolute;
+            width: 20px; /* Ширина молнии */
+            height: 40px; /* Высота молнии */
+            background: yellow; /* Цвет молнии */
+            clip-path: polygon(50% 0%, 100% 100%, 0% 100%); /* Форма молнии */
+            bottom: 20px; /* Отступ от нижнего края */
+            right: 20px; /* Отступ от правого края */
+            animation: jump 1s infinite; /* Анимация прыжка */
+        }
+
+        @keyframes jump {
+            0% { transform: translateY(0); }
+            50% { transform: translateY(-20px); } /* Высота прыжка */
+            100% { transform: translateY(0); }
+        }
+        
+        /* Screen reader only class */
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border-width: 0;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <h1>Arduino IDE Online</h1>
+    </header>
+
+    <div class="content">
+        <a href="../index.html" class="home-btn">На главную</a>
+
+        <div class="section">
+            <h2>Компоненты</h2>
+            <div class="components-panel">
+                <button class="component-btn" onclick="addComponent('LED')">Добавить LED</button>
+                <button class="component-btn" onclick="addComponent('Button')">Добавить кнопку</button>
+                <button class="component-btn" onclick="addComponent('Potentiometer')">Добавить потенциометр</button>
+                <button class="component-btn" onclick="addComponent('LCD')">Добавить LCD</button>
+                <button class="component-btn" onclick="addComponent('UltrasonicSensor')">Добавить УЗ датчик</button>
+                <button class="component-btn" onclick="addComponent('ServoMotor')">Добавить сервопривод</button>
+                <button class="component-btn" onclick="addComponent('RGBLed')">Добавить RGB LED</button>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Подключение компонентов</h2>
+            <div class="wire-info">
+                <p>Для создания соединения:</p>
+                <ol>
+                    <li>Кликните на пин компонента или платы</li>
+                    <li>Протяните провод до нужного пина</li>
+                    <li>Отпустите кнопку мыши для создания соединения</li>
+                </ol>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Шаблоны проектов</h2>
+            <div class="templates-panel">
+                <label for="template-select" class="sr-only">Выберите шаблон проекта</label>
+                <select id="template-select" class="template-select" aria-label="Выберите шаблон проекта">
+                    <option value="">Выберите шаблон...</option>
+                </select>
+                <button class="template-btn" onclick="loadTemplate()">Загрузить шаблон</button>
+            </div>
+            <div id="template-description" class="template-description"></div>
+        </div>
+
+        <div class="section">
+            <h2>Интерактивный редактор кода</h2>
+            <div class="ide-container">
+                <div class="code-editor">
+                    <label for="code-area" class="sr-only">Arduino Code Editor</label>
+                    <textarea id="code-area" aria-label="Arduino Code Editor" placeholder="Enter your Arduino code here">void setup() {
+    pinMode(13, OUTPUT);
+}
+
+void loop() {
+    digitalWrite(13, HIGH);
+    delay(1000);
+    digitalWrite(13, LOW);
+    delay(1000);
+}</textarea>
+                </div>
+                <div class="simulation-view">
+                    <div id="simulation-canvas"></div>
+                </div>
+            </div>
+
+            <div class="control-panel">
+                <button class="submit-btn run-btn" onclick="runSimulation()">Запустить</button>
+                <button class="submit-btn stop-btn" onclick="stopSimulation()">Остановить</button>
+                <button class="submit-btn save-btn" onclick="saveCode()">Сохранить</button>
+                <button class="submit-btn clear-btn" onclick="clearAll()">Очистить всё</button>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Управление проектом</h2>
+            <div class="control-panel">
+                <button class="control-btn" onclick="verifyCode()">Проверить код</button>
+                <button class="control-btn" onclick="compileCircuit()">Компилировать схему</button>
+                <button class="control-btn" onclick="runSimulation()">Запустить симуляцию</button>
+                <button class="control-btn" onclick="stopSimulation()">Остановить симуляцию</button>
+                <button class="control-btn" onclick="saveProject()">Сохранить проект</button>
+            </div>
+            <div id="console-output" class="console-output"></div>
+        </div>
+    </div>
+
+    <div id="lightning" class="lightning"></div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/clike/clike.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.min.js"></script>
+    <script src="../js/components.js"></script>
+    <script src="../js/templates.js"></script>
+    <script>
+        let arduinoBoard;
+        let components = [];
+        let wires = [];
+        let currentWire = null;
+        let selectedComponent = null;
+        let draggingWire = false;
+        let editor;
+
+        // Добавляем константы Arduino
+        const HIGH = 1;
+        const LOW = 0;
+        const INPUT = 0;
+        const OUTPUT = 1;
+        const INPUT_PULLUP = 2;
+
+        let isSimulationRunning = false;
+        let simulationInterval = null;
+        let boardState = {
+            pins: {},
+            time: 0,
+            interval: null
+        };
+        let lastUpdateTime = 0;
+        const simulationSpeed = 1; // множитель скорости симуляции
+
+        // Определяем компоненты перед их использованием
+        const COMPONENTS = {
+            'LED': LED,
+            'BUTTON': Button,
+            'LCD': class LCD {
+                constructor(x, y) {
+                    this.x = x;
+                    this.y = y;
+                    this.width = 160;
+                    this.height = 60;
+                    this.text = '';
+                    this.cursorX = 0;
+                    this.cursorY = 0;
+                    
+                    this.pins = [
+                        { name: 'RS', type: 'digital', offsetX: 10, offsetY: this.height + 10, component: this },
+                        { name: 'E', type: 'digital', offsetX: 30, offsetY: this.height + 10, component: this },
+                        { name: 'D4', type: 'digital', offsetX: 50, offsetY: this.height + 10, component: this },
+                        { name: 'D5', type: 'digital', offsetX: 70, offsetY: this.height + 10, component: this },
+                        { name: 'D6', type: 'digital', offsetX: 90, offsetY: this.height + 10, component: this },
+                        { name: 'D7', type: 'digital', offsetX: 110, offsetY: this.height + 10, component: this },
+                        { name: 'VSS', type: 'gnd', offsetX: 130, offsetY: this.height + 10, component: this },
+                        { name: 'VDD', type: 'power', offsetX: 150, offsetY: this.height + 10, component: this },
+                        { name: 'V0', type: 'gnd', offsetX: 170, offsetY: this.height + 10, component: this },
+                        { name: 'RW', type: 'gnd', offsetX: 190, offsetY: this.height + 10, component: this }
+                    ];
+                }
+
+                draw(p) {
+                    // Рисуем корпус LCD
+                    p.fill(200);
+                    p.stroke(0);
+                    p.rect(this.x, this.y, this.width, this.height);
+
+                    // Рисуем экран
+                    p.fill(0, 150, 200);
+                    p.rect(this.x + 5, this.y + 5, this.width - 10, this.height - 10);
+
+                    // Рисуем текст
+                    p.fill(0);
+                    p.textSize(12);
+                    p.textAlign(p.LEFT, p.TOP);
+                    p.text(this.text, this.x + 10, this.y + 10);
+
+                    // Рисуем пины и их метки
+                    this.pins.forEach(pin => {
+                        // Рисуем пин
+                        p.stroke(0);
+                        p.line(
+                            this.x + pin.offsetX,
+                            this.y + pin.offsetY,
+                            this.x + pin.offsetX,
+                            this.y + pin.offsetY + 10
+                        );
+
+                        // Рисуем метку пина
+                        p.fill(0);
+                        p.textSize(8);
+                        p.textAlign(p.CENTER);
+                        p.text(pin.name, this.x + pin.offsetX, this.y + pin.offsetY + 15);
+                    });
+                }
+
+                updatePinPositions() {
+                    this.pins.forEach(pin => {
+                        pin.x = this.x + pin.offsetX;
+                        pin.y = this.y + pin.offsetY;
+                    });
+                }
+
+                getPinAt(x, y) {
+                    return this.pins.find(pin => {
+                        const pinX = this.x + pin.offsetX;
+                        const pinY = this.y + pin.offsetY;
+                        return Math.abs(x - pinX) < 10 && Math.abs(y - pinY) < 10;
+                    });
+                }
+
+                setText(text) {
+                    this.text = text;
+                }
+
+                setCursor(x, y) {
+                    this.cursorX = x;
+                    this.cursorY = y;
+                }
+            }
+        };
+
+        function initializeSimulation() {
+            // Создаем плату Arduino
+            arduinoBoard = new ArduinoBoard(50, 50);
+            
+            // Инициализация редактора только если он еще не создан
+            if (!editor) {
+                const codeArea = document.getElementById("code-area");
+                if (codeArea) {
+                    editor = CodeMirror.fromTextArea(codeArea, {
+                        mode: "text/x-c++src",
+                        theme: "monokai",
+                        lineNumbers: true,
+                        autoCloseBrackets: true,
+                        matchBrackets: true,
+                        indentUnit: 4,
+                        viewportMargin: Infinity,
+                        lineWrapping: true
+                    });
+
+                    // Устанавливаем начальное значение, только если редактор успешно создан
+                    const initialCode = `void setup() {
+    pinMode(13, OUTPUT);
+}
+
+void loop() {
+    digitalWrite(13, HIGH);
+    delay(1000);
+    digitalWrite(13, LOW);
+    delay(1000);
+}`;
+                    editor.setValue(initialCode);
+                }
+            }
+        }
+
+        function addComponent(type) {
+            if (COMPONENTS[type]) {
+                const component = new COMPONENTS[type](100, 100);
+                components.push(component);
+                return component;
+            }
+            console.error(`Component type ${type} not found`);
+            return null;
+        }
+
+        function clearAll() {
+            components = [];
+            wires = [];
+            currentWire = null;
+            selectedComponent = null;
+            draggingWire = false;
+            console.log("Cleared all components and wires");
+        }
+
+        let sketch = new p5((p) => {
+            // Объявляем класс Wire внутри области видимости sketch
+            class Wire {
+                constructor(startPin, startX, startY) {
+                    this.startPin = startPin;
+                    this.startX = startX;
+                    this.startY = startY;
+                    this.endX = startX;
+                    this.endY = startY;
+                    this.endPin = null;
+                }
+
+                connect(endPin) {
+                    this.endPin = endPin;
+                    this.updatePositions();
+                }
+
+                updateEnd(x, y) {
+                    this.endX = x;
+                    this.endY = y;
+                }
+
+                updatePositions() {
+                    const startPos = this.calculateWireEndpoint(this.startPin, this.startPin.component);
+                    const endPos = this.endPin ? 
+                        this.calculateWireEndpoint(this.endPin, this.endPin.component) : 
+                        { x: this.endX, y: this.endY };
+                    
+                    this.startX = startPos.x;
+                    this.startY = startPos.y;
+                    this.endX = endPos.x;
+                    this.endY = endPos.y;
+                }
+
+                calculateWireEndpoint(pin, component) {
+                    if (component) {
+                        return {
+                            x: component.x + pin.offsetX,
+                            y: component.y + pin.offsetY
+                        };
+                    }
+                    return {
+                        x: pin.x,
+                        y: pin.y
+                    };
+                }
+
+                draw(p) {
+                    this.updatePositions();
+                    p.stroke(0);
+                    p.strokeWeight(2);
+                    p.line(this.startX, this.startY, this.endX, this.endY);
+                }
+            }
+
+            p.setup = () => {
+                const canvas = p.createCanvas(800, 600);
+                canvas.parent('simulation-canvas');
+                initializeSimulation();
+            };
+
+            p.draw = () => {
+                p.background(255);
+                
+                // Рисуем плату
+                arduinoBoard.draw(p);
+                
+                // Рисуем компоненты
+                components.forEach(component => {
+                    component.draw(p);
+                });
+                
+                // Рисуем провода
+                wires.forEach(wire => {
+                    wire.draw(p);
+                });
+                
+                // Рисуем создаваемый провод
+                if (currentWire) {
+                    currentWire.updateEnd(p.mouseX, p.mouseY);
+                    currentWire.draw(p);
+                }
+            };
+
+            p.mousePressed = () => {
+                if (p.mouseX < 0 || p.mouseX > p.width || p.mouseY < 0 || p.mouseY > p.height) {
+                    return;
+                }
+
+                // Проверяем клик по компонентам
+                for (let i = components.length - 1; i >= 0; i--) {
+                    const component = components[i];
+                    // Добавляем проверку для LCD
+                    if (component instanceof COMPONENTS.LCD) {
+                        if (p.mouseX > component.x && p.mouseX < component.x + component.width &&
+                            p.mouseY > component.y && p.mouseY < component.y + component.height) {
+                            selectedComponent = component;
+                            draggingWire = false;
+                            return;
+                        }
+                    } else {
+                        // Существующая проверка для других компонентов
+                        if (p.mouseX > component.x && p.mouseX < component.x + 20 &&
+                            p.mouseY > component.y && p.mouseY < component.y + 30) {
+                            selectedComponent = component;
+                            draggingWire = false;
+                            return;
+                        }
+                    }
+
+                    // Проверка кликов по пинам
+                    const pin = component.getPinAt(p.mouseX, p.mouseY);
+                    if (pin) {
+                        draggingWire = true;
+                        selectedComponent = null;
+                        currentWire = new Wire(pin, component.x + pin.offsetX, component.y + pin.offsetY);
+                        return;
+                    }
+                }
+
+                // Проверяем клик по пинам Arduino
+                const boardPin = arduinoBoard.getPinAt(p.mouseX, p.mouseY);
+                if (boardPin) {
+                    draggingWire = true;
+                    selectedComponent = null;
+                    currentWire = new Wire(boardPin, boardPin.x, boardPin.y);
+                    return;
+                }
+
+                selectedComponent = null;
+                draggingWire = false;
+            };
+
+            p.mouseDragged = () => {
+                if (selectedComponent) {
+                    selectedComponent.x = p.mouseX - (selectedComponent instanceof COMPONENTS.LCD ? selectedComponent.width/2 : 10);
+                    selectedComponent.y = p.mouseY - (selectedComponent instanceof COMPONENTS.LCD ? selectedComponent.height/2 : 15);
+                    selectedComponent.updatePinPositions();
+                    
+                    // Обновляем все провода, подключенные к компоненту
+                    wires.forEach(wire => {
+                        if (wire.startPin.component === selectedComponent || 
+                            (wire.endPin && wire.endPin.component === selectedComponent)) {
+                            wire.updatePositions();
+                        }
+                    });
+                }
+                
+                if (currentWire) {
+                    currentWire.endX = p.mouseX;
+                    currentWire.endY = p.mouseY;
+                }
+            };
+
+            p.mouseReleased = () => {
+                if (draggingWire) {
+                    let endPin = null;
+                    let endX = 0;
+                    let endY = 0;
+
+                    // Проверяем пины платы
+                    const boardPin = arduinoBoard.getPinAt(p.mouseX, p.mouseY);
+                    if (boardPin) {
+                        endPin = boardPin;
+                        endX = boardPin.x;
+                        endY = boardPin.y;
+                    }
+
+                    // Проверяем пины компонентов
+                    components.forEach(component => {
+                        const pin = component.getPinAt(p.mouseX, p.mouseY);
+                        if (pin) {
+                            endPin = pin;
+                            endX = component.x + pin.offsetX;
+                            endY = component.y + pin.offsetY;
+                        }
+                    });
+
+                    if (endPin && endPin !== currentWire.startPin) {
+                        console.log('Attempting to connect:', currentWire.startPin, endPin);
+                        if (isCompatibleConnection(currentWire.startPin, endPin)) {
+                            currentWire.endX = endX;
+                            currentWire.endY = endY;
+                            currentWire.connect(endPin);
+                            wires.push(currentWire);
+                            console.log('Wire connected successfully');
+                        } else {
+                            console.log('Connection failed: incompatible pins');
+                        }
+                    } else {
+                        console.log('Connection failed: invalid end point');
+                    }
+                    draggingWire = false;
+                    currentWire = null;
+                }
+                selectedComponent = null;
+            };
+        });
+
+        function isCompatibleConnection(pin1, pin2) {
+            console.log('Checking compatibility:', pin1, pin2);
+            
+            // Проверяем подключение GND
+            if (pin1.type === 'gnd' || pin1.name === 'GND') {
+                return pin2.type === 'gnd' || pin2.name === 'GND';
+            }
+            if (pin2.type === 'gnd' || pin2.name === 'GND') {
+                return pin1.type === 'gnd' || pin1.name === 'GND';
+            }
+            
+            // Проверяем подключение питания (5V, VCC)
+            if (pin1.type === 'power' || pin1.name === '5V' || pin1.name === 'VCC') {
+                return pin2.type === 'power' || pin2.name === '5V' || pin2.name === 'VCC';
+            }
+            if (pin2.type === 'power' || pin2.name === '5V' || pin2.name === 'VCC') {
+                return pin1.type === 'power' || pin1.name === '5V' || pin1.name === 'VCC';
+            }
+            
+            // Проверяем цифровые пины
+            if (pin1.type === 'digital') {
+                return pin2.type === 'digital';
+            }
+            
+            // Проверяем аналоговые пины
+            if (pin1.type === 'analog') {
+                return pin2.type === 'analog';
+            }
+            
+            return false;
+        }
+
+        // Обновленная функция симуляции
+        function runSimulation() {
+            if (isSimulationRunning) return;
+            
+            console.log('Starting simulation...');
+            isSimulationRunning = true;
+            
+            // Инициализация состояния платы
+            boardState = {
+                pins: {},
+                time: 0,
+                interval: null
+            };
+
+            try {
+                const simulationContext = {
+                    HIGH: 1,
+                    LOW: 0,
+                    INPUT: 0,
+                    OUTPUT: 1,
+                    INPUT_PULLUP: 2,
+                    lcd: null, // Добавляем lcd в контекст
+
+                    pinMode: function(pin, mode) {
+                        const pinNumber = typeof pin === 'string' ? parseInt(pin.replace(/[DA]/g, '')) : pin;
+                        boardState.pins[pinNumber] = {
+                            mode: mode,
+                            value: mode === this.INPUT_PULLUP ? this.HIGH : this.LOW,
+                            type: pin.toString().startsWith('A') ? 'analog' : 'digital'
+                        };
+                        console.log(`pinMode(${pinNumber}, ${mode})`);
+                    },
+                    
+                    digitalWrite: function(pin, value) {
+                        const pinNumber = typeof pin === 'string' ? parseInt(pin.replace('D', '')) : pin;
+                        if (!boardState.pins[pinNumber]) {
+                            boardState.pins[pinNumber] = { mode: this.OUTPUT, value: this.LOW, type: 'digital' };
+                        }
+                        boardState.pins[pinNumber].value = value;
+                        
+                        // Немедленно обновляем состояние компонентов
+                        updateConnectedComponents(pinNumber, value);
+                        console.log(`digitalWrite(${pinNumber}, ${value})`);
+                    },
+                    
+                    delay: async function(ms) {
+                        const startTime = Date.now();
+                        await new Promise(resolve => setTimeout(resolve, ms));
+                        const endTime = Date.now();
+                        const actualDelay = endTime - startTime;
+                        console.log(`Delay: requested ${ms}ms, actual ${actualDelay}ms`);
+                    }
+                };
+
+                const code = editor.getValue();
+                
+                // Извлекаем setup и loop
+                const setupMatch = code.match(/void\s+setup\s*\(\)\s*{([^}]*)}/);
+                const loopMatch = code.match(/void\s+loop\s*\(\)\s*{([^}]*)}/);
+
+                if (!setupMatch || !loopMatch) {
+                    throw new Error('Не найдены функции setup() или loop()');
+                }
+
+                // Создаем и выполняем setup и loop
+                const setupCode = `async function setup() { 
+                    ${setupMatch[1]} 
+                    lcd = new LiquidCrystal(12, 11, 5, 4, 3, 2); // Инициализация LCD
+                }`;
+                const loopCode = `async function loop() {
+                    while(isSimulationRunning) {
+                        ${loopMatch[1]}
+                        await new Promise(resolve => setTimeout(resolve, 10)); // Добавляем небольшую задержку
+                    }
+                }`;
+
+                const functions = new Function(
+                    ...Object.keys(simulationContext),
+                    setupCode + loopCode + 'return {setup, loop}'
+                );
+
+                // Запускаем setup и loop
+                (async () => {
+                    try {
+                        const { setup, loop } = functions.apply(simulationContext, Object.values(simulationContext));
+                        await setup();
+                        await loop();
+                    } catch (error) {
+                        console.error('Simulation error:', error);
+                        stopSimulation();
+                    }
+                })();
+
+            } catch (error) {
+                console.error('Simulation initialization error:', error);
+                stopSimulation();
+            }
+        }
+
+        // Вспомогательные функции для симуляции
+        function updateConnectedComponents(pinNumber, value) {
+            console.log(`Updating components for pin ${pinNumber} with value ${value}`);
+            
+            wires.forEach(wire => {
+                // Проверяем подключение к пину Arduino
+                let arduinoPin = null;
+                let ledComponent = null;
+
+                // Определяем, какой конец провода подключен к Arduino
+                if (wire.startPin.type === 'board' && wire.startPin.number === pinNumber) {
+                    arduinoPin = wire.startPin;
+                    ledComponent = wire.endPin && wire.endPin.component;
+                } else if (wire.endPin && wire.endPin.type === 'board' && wire.endPin.number === pinNumber) {
+                    arduinoPin = wire.endPin;
+                    ledComponent = wire.startPin && wire.startPin.component;
+                }
+
+                // Если нашли подключение к Arduino и компонент является светодиодом
+                if (arduinoPin && ledComponent instanceof LED) {
+                    // Проверяем, подключен ли второй провод к GND
+                    const hasGndConnection = wires.some(w => {
+                        const isConnectedToThisLed = 
+                            (w.startPin.component === ledComponent && w.startPin.name === 'GND') ||
+                            (w.endPin && w.endPin.component === ledComponent && w.endPin.name === 'GND');
+                        const isConnectedToGnd = 
+                            (w.startPin.type === 'board' && w.startPin.name === 'GND') ||
+                            (w.endPin && w.endPin.type === 'board' && w.endPin.name === 'GND');
+                        return isConnectedToThisLed && isConnectedToGnd;
+                    });
+
+                    if (hasGndConnection) {
+                        ledComponent.state = value === HIGH;
+                        console.log(`LED state updated: ${ledComponent.state}`);
+                    }
+                }
+            });
+
+            // Запрашиваем перерисовку
+            if (sketch) {
+                sketch.redraw();
+            }
+        }
+
+        function findConnectedAnalogComponent(pinNumber) {
+            for (const wire of wires) {
+                if (wire.startPin.number === pinNumber || wire.endPin.number === pinNumber) {
+                    const component = wire.startPin.number === pinNumber ? 
+                        wire.endPin.component : wire.startPin.component;
+                    
+                    if (component instanceof Potentiometer) {
+                        return component;
+                    }
+                }
+            }
+            return null;
+        }
+
+        function stopSimulation() {
+            console.log('Stopping simulation...');
+            isSimulationRunning = false;
+            
+            // Сброс состояния всех компонентов
+            components.forEach(component => {
+                if (component instanceof LED) {
+                    component.state = false;
+                } else if (component instanceof ServoMotor) {
+                    component.setPosition(0);
+                }
+            });
+            
+            // Очистка состояния платы
+            boardState = {
+                pins: {},
+                time: 0,
+                interval: null
+            };
+        }
+
+        function saveCode() {
+            const code = editor.getValue();
+            const blob = new Blob([code], { type: 'text/plain' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'arduino_code.ino';
+            a.click();
+            window.URL.revokeObjectURL(url);
+        }
+
+        // Функция для проверки корректности схемы
+        function verifyCircuit() {
+            const errors = [];
+            const warnings = [];
+            
+            // Проверяем все компоненты
+            components.forEach(component => {
+                // Проверка питания
+                let hasGround = false;
+                let hasPower = false;
+                
+                wires.forEach(wire => {
+                    if (wire.startPin === component || wire.endPin === component) {
+                        if (wire.startPin.type === 'gnd' || wire.endPin.type === 'gnd') hasGround = true;
+                        if (wire.startPin.type === 'power5' || wire.endPin.type === 'power5') hasPower = true;
+                    }
+                });
+                
+                if (!hasGround) warnings.push(`${component.constructor.name}: Нет подключения к земле (GND)`);
+                if (!hasPower) warnings.push(`${component.constructor.name}: Нет подключения к питанию (5V)`);
+                
+                // Проверка цифровых/аналоговых пинов
+                let hasSignalPin = false;
+                component.pins.forEach(pin => {
+                    if (pin.type === 'digital' || pin.type === 'analog') {
+                        wires.forEach(wire => {
+                            if (wire.startPin === pin || wire.endPin === pin) hasSignalPin = true;
+                        });
+                    }
+                });
+                
+                if (!hasSignalPin) warnings.push(`${component.constructor.name}: Нет подключения к сигнальным пинам`);
+            });
+
+            return { errors, warnings };
+        }
+
+        // Функция для компиляции схемы
+        function compileCircuit() {
+            const consoleOutput = document.getElementById('console-output');
+            consoleOutput.innerHTML = '';
+            
+            // Проверяем схему
+            const { errors, warnings } = verifyCircuit();
+            
+            if (errors.length > 0) {
+                consoleOutput.innerHTML += '<div class="error">Ошибки:</div>';
+                errors.forEach(error => {
+                    consoleOutput.innerHTML += `<div class="error-item">${error}</div>`;
+                });
+                return false;
+            }
+
+            if (warnings.length > 0) {
+                consoleOutput.innerHTML += '<div class="warning">Предупреждения:</div>';
+                warnings.forEach(warning => {
+                    consoleOutput.innerHTML += `<div class="warning-item">${warning}</div>`;
+                });
+            }
+
+            // Генерируем код для компонентов
+            let generatedCode = '// Автоматически сгенерированный код\n\n';
+            
+            // Добавляем определения пинов
+            components.forEach((component, index) => {
+                wires.forEach(wire => {
+                    if (wire.startPin === component || wire.endPin === component) {
+                        const pin = wire.startPin === component ? wire.endPin : wire.startPin;
+                        if (pin.number !== undefined) {
+                            generatedCode += `#define ${component.constructor.name}_${index} ${pin.number}\n`;
+                        }
+                    }
+                });
+            });
+
+            generatedCode += '\nvoid setup() {\n';
+            // Добавляем инициализацию пинов
+            components.forEach((component, index) => {
+                if (component instanceof LED) {
+                    generatedCode += `  pinMode(${component.constructor.name}_${index}, OUTPUT);\n`;
+                } else if (component instanceof Button) {
+                    generatedCode += `  pinMode(${component.constructor.name}_${index}, INPUT);\n`;
+                }
+            });
+            generatedCode += '}\n\n';
+
+            // Добавляем код из редактора
+            generatedCode += editor.getValue();
+
+            // Показываем результат
+            consoleOutput.innerHTML += '<div class="success">Компиляция успешна!</div>';
+            consoleOutput.innerHTML += '<div class="code">Сгенерированный код:</div>';
+            consoleOutput.innerHTML += `<pre>${generatedCode}</pre>`;
+
+            return true;
+        }
+
+        // Функция для сохранения проекта
+        function saveProject() {
+            const project = {
+                components: components.map(c => ({
+                    type: c.constructor.name,
+                    x: c.x,
+                    y: c.y
+                })),
+                wires: wires.map(w => ({
+                    startPin: {
+                        component: components.indexOf(w.startPin.component),
+                        pinIndex: w.startPin.component ? w.startPin.component.pins.indexOf(w.startPin) : -1
+                    },
+                    endPin: {
+                        component: components.indexOf(w.endPin.component),
+                        pinIndex: w.endPin.component ? w.endPin.component.pins.indexOf(w.endPin) : -1
+                    }
+                })),
+                code: editor.getValue()
+            };
+
+            const blob = new Blob([JSON.stringify(project)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'arduino_project.json';
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        // Добавляем стили для консоли
+        document.querySelector('style').textContent += `
+            .console-output {
+                background: #1e1e1e;
+                color: #ffffff;
+                padding: 10px;
+                margin-top: 10px;
+                border-radius: 5px;
+                font-family: monospace;
+                max-height: 200px;
+                overflow-y: auto;
+            }
+            .error { color: #ff5555; }
+            .warning { color: #ffb86c; }
+            .success { color: #50fa7b; }
+            .code { color: #8be9fd; margin-top: 10px; }
+            .error-item, .warning-item {
+                margin-left: 20px;
+                margin-top: 5px;
+            }
+            .control-panel {
+                display: flex;
+                gap: 10px;
+                margin-bottom: 10px;
+            }
+            .control-btn {
+                background: #4CAF50;
+                color: white;
+                border: none;
+                padding: 8px 16px;
+                border-radius: 4px;
+                cursor: pointer;
+            }
+            .control-btn:hover {
+                background: #45a049;
+            }
+        `;
+
+        // Инициализация списка шаблонов
+        function initializeTemplates() {
+            const select = document.getElementById('template-select');
+            Object.entries(ARDUINO_TEMPLATES).forEach(([key, template]) => {
+                const option = document.createElement('option');
+                option.value = key;
+                option.textContent = template.name;
+                select.appendChild(option);
+            });
+
+            // Обработчик изменения выбора шаблона
+            select.addEventListener('change', () => {
+                const template = ARDUINO_TEMPLATES[select.value];
+                const description = document.getElementById('template-description');
+                if (template) {
+                    description.textContent = template.description;
+                } else {
+                    description.textContent = '';
+                }
+            });
+        }
+
+        // Функция очистки текущей схемы
+        function clearComponents() {
+            components = [];
+            wires = [];
+            currentWire = null;
+            selectedComponent = null;
+        }
+
+        // Обновляем существующий объект ARDUINO_TEMPLATES
+        ARDUINO_TEMPLATES['lcd_hello'] = {
+            name: 'LCD Hello World',
+            description: 'Вывод текста на LCD дисплей. Подключение: RS->12, E->11, D4->5, D5->4, D6->3, D7->2, VSS->GND, VDD->5V, V0->GND, RW->GND',
+            components: [
+                {
+                    type: 'LCD',
+                    x: 200,
+                    y: 100,
+                    connections: [
+                        { pin: 'RS', to: 'D12' },
+                        { pin: 'E', to: 'D11' },
+                        { pin: 'D4', to: 'D5' },
+                        { pin: 'D5', to: 'D4' },
+                        { pin: 'D6', to: 'D3' },
+                        { pin: 'D7', to: 'D2' },
+                        { pin: 'VSS', to: 'GND' },
+                        { pin: 'VDD', to: '5V' },
+                        { pin: 'V0', to: 'GND' },
+                        { pin: 'RW', to: 'GND' }
+                    ]
+                }
+            ],
+            code: `#include <LiquidCrystal.h>
+
+// Инициализация LCD (RS, E, D4, D5, D6, D7)
+LiquidCrystal lcd(12, 11, 5, 4, 3, 2);
+
+void setup() {
+    // Устанавливаем размер LCD (16 столбцов, 2 строки)
+    lcd.begin(16, 2);
+    // Выводим сообщение
+    lcd.print("Hello, World!");
+}
+
+void loop() {
+    // Устанавливаем курсор на вторую строку
+    lcd.setCursor(0, 1);
+    // Выводим количество секунд с момента запуска
+    lcd.print(millis()/1000);
+    delay(1000);
+}`
+        };
+
+        // Обновляем функцию loadTemplate для автоматического создания соединений
+        function loadTemplate() {
+            const templateKey = document.getElementById('template-select').value;
+            if (!templateKey) {
+                console.log('No template selected');
+                return;
+            }
+
+            const template = ARDUINO_TEMPLATES[templateKey];
+            console.log('Loading template:', template.name);
+            
+            // Очищаем текущую схему
+            clearAll();
+            
+            // Добавляем компоненты из шаблона
+            template.components.forEach((comp) => {
+                console.log('Adding component:', comp.type);
+                const component = addComponent(comp.type);
+                if (component) {
+                    // Устанавливаем позицию компонента
+                    component.x = comp.x;
+                    component.y = comp.y;
+                    component.updatePinPositions();
+
+                    // Создаем все необходимые соединения
+                    if (comp.connections) {
+                        comp.connections.forEach(connection => {
+                            // Находим пин компонента
+                            const componentPin = component.pins.find(p => p.name === connection.pin);
+                            if (!componentPin) {
+                                console.warn(`Pin ${connection.pin} not found on component`);
+                                return;
+                            }
+
+                            // Находим пин платы Arduino
+                            let boardPin;
+                            if (connection.to.startsWith('D')) {
+                                const pinNumber = parseInt(connection.to.slice(1));
+                                boardPin = arduinoBoard.pins.digital[pinNumber];
+                            } else if (connection.to === 'GND') {
+                                boardPin = arduinoBoard.pins.power.find(p => p.name === 'GND');
+                            } else if (connection.to === '5V' || connection.to === 'VCC') {
+                                boardPin = arduinoBoard.pins.power.find(p => p.name === '5V');
+                            }
+
+                            if (!boardPin) {
+                                console.warn(`Board pin ${connection.to} not found`);
+                                return;
+                            }
+
+                            // Создаем провод
+                            try {
+                                const wire = new Wire(componentPin, 
+                                    component.x + componentPin.offsetX,
+                                    component.y + componentPin.offsetY);
+                                wire.connect(boardPin);
+                                wires.push(wire);
+                                console.log(`Created wire from ${connection.pin} to ${connection.to}`);
+                            } catch (error) {
+                                console.error('Error creating wire:', error);
+                            }
+                        });
+                    }
+                }
+            });
+
+            // Подключаем провода к LCD дисплею
+            const lcdComponent = components.find(c => c instanceof COMPONENTS.LCD);
+            if (lcdComponent) {
+                // Пример подключения пинов к LCD
+                const connections = [
+                    { pin: 'RS', to: 'D12' },
+                    { pin: 'E', to: 'D11' },
+                    { pin: 'D4', to: 'D5' },
+                    { pin: 'D5', to: 'D4' },
+                    { pin: 'D6', to: 'D3' },
+                    { pin: 'D7', to: 'D2' },
+                    { pin: 'VSS', to: 'GND' },
+                    { pin: 'VDD', to: '5V' },
+                    { pin: 'V0', to: 'GND' },
+                    { pin: 'RW', to: 'GND' }
+                ];
+
+                connections.forEach(connection => {
+                    const componentPin = lcdComponent.pins.find(p => p.name === connection.pin);
+                    if (componentPin) {
+                        const boardPin = arduinoBoard.pins.digital[parseInt(connection.to.slice(1))] || 
+                                        arduinoBoard.pins.power.find(p => p.name === connection.to);
+                        if (boardPin) {
+                            const wire = new Wire(componentPin, 
+                                lcdComponent.x + componentPin.offsetX,
+                                lcdComponent.y + componentPin.offsetY);
+                            wire.connect(boardPin);
+                            wires.push(wire);
+                            console.log(`Connected ${connection.pin} to ${connection.to}`);
+                        }
+                    }
+                });
+            }
+
+            // Подключаем провода к LED
+            const ledComponent = components.find(c => c instanceof COMPONENTS.LED);
+            if (ledComponent) {
+                // Пример подключения пинов к LED
+                const ledConnections = [
+                    { pin: 'D', to: 'D2' }, // Подключаем сигнальный пин LED к D2
+                    { pin: 'GND', to: 'GND' }, // Подключаем GND LED к GND
+                    { pin: 'VCC', to: '5V' } // Подключаем VCC LED к 5V
+                ];
+
+                ledConnections.forEach(connection => {
+                    const componentPin = ledComponent.pins.find(p => p.name === connection.pin);
+                    if (componentPin) {
+                        const boardPin = arduinoBoard.pins.digital[parseInt(connection.to.slice(1))] || 
+                                        arduinoBoard.pins.power.find(p => p.name === connection.to);
+                        if (boardPin) {
+                            const wire = new Wire(componentPin, 
+                                ledComponent.x + componentPin.offsetX,
+                                ledComponent.y + componentPin.offsetY);
+                            wire.connect(boardPin);
+                            wires.push(wire);
+                            console.log(`Connected ${connection.pin} to ${connection.to}`);
+                        }
+                    }
+                });
+            }
+
+            // Устанавливаем код в редактор
+            editor.setValue(template.code);
+
+            // Обновляем консоль
+            const consoleOutput = document.getElementById('console-output');
+            consoleOutput.innerHTML = `
+                <div class="success">Шаблон "${template.name}" загружен успешно!</div>
+                <div class="info">Схема подключена и готова к запуску.</div>
+                <div class="instruction">Нажмите кнопку "Запустить" для начала симуляции.</div>
+            `;
+            
+            // Автоматически компилируем схему
+            compileCircuit();
+            
+            console.log('Template loaded and wired successfully');
+        }
+
+        // Добавляем стили для новых сообщений в консоли
+        document.querySelector('style').textContent += `
+            .info { color: #8be9fd; margin: 5px 0; }
+            .instruction { color: #50fa7b; margin: 5px 0; font-style: italic; }
+        `;
+
+        // Инициализируем шаблоны при загрузке
+        window.addEventListener('load', initializeTemplates);
+
+        // Добавляем функцию для постоянного обновления состояния компонентов
+        function updateSimulation() {
+            if (isSimulationRunning) {
+                // Обновляем все компоненты на основе текущего состояния пинов
+                Object.entries(boardState.pins).forEach(([pinNumber, pinState]) => {
+                    if (pinState.mode === OUTPUT) {
+                        updateConnectedComponents(parseInt(pinNumber), pinState.value);
+                    }
+                });
+            }
+            requestAnimationFrame(updateSimulation);
+        }
+
+        // Запускаем цикл обновления
+        updateSimulation();
+
+        // Если нужно, можно добавить дополнительные функции для управления молнией
+        // Например, можно сделать так, чтобы молния исчезала или появлялась по событию
+    </script>
+</body>
+</html> 

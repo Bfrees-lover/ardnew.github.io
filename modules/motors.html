@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Моторы и сервоприводы Arduino</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/themes/prism-okaidia.min.css" rel="stylesheet" />
+    <style>
+        pre[class*="language-"] {
+            padding: 1.5em;
+            margin: 1em 0;
+            font-size: 16px;
+            border-radius: 8px;
+            background: #e8e8e8 !important;
+            border: 1px solid #ddd;
+        }
+        
+        code[class*="language-"] {
+            text-shadow: none;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            line-height: 1.5;
+            color: #333 !important;
+        }
+
+        /* Arduino IDE-like syntax highlighting */
+        .token.keyword {
+            color: #00979C !important;
+        }
+
+        .token.function {
+            color: #D35400 !important;
+        }
+
+        .token.number {
+            color: #00979C !important;
+        }
+
+        .token.comment {
+            color: #757575 !important;
+        }
+
+        .token.string {
+            color: #7F8C8D !important;
+        }
+
+        .token.preprocessor {
+            color: #728E00 !important;
+        }
+
+        .token.constant {
+            color: #00979C !important;
+        }
+
+        .token.operator {
+            color: #434F54 !important;
+        }
+
+        .content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        section {
+            margin-bottom: 40px;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <a href="../index.html" class="back-button">← Назад</a>
+        <h1>Моторы и сервоприводы</h1>
+        <p>Управление различными типами двигателей</p>
+    </header>
+
+    <div class="content">
+        <section>
+            <h2>Сервопривод</h2>
+            <p>Базовый пример управления сервоприводом:</p>
+            
+            <div class="code-block">
+                <h3>Управление сервоприводом</h3>
+                <pre class="language-cpp"><code>#include <Servo.h>
+
+Servo myservo;
+int pos = 0;
+
+void setup() {
+    myservo.attach(9);  // Подключаем сервопривод к пину 9
+}
+
+void loop() {
+    // Поворот от 0 до 180 градусов
+    for (pos = 0; pos <= 180; pos++) {
+        myservo.write(pos);
+        delay(15);
+    }
+    
+    // Поворот от 180 до 0 градусов
+    for (pos = 180; pos >= 0; pos--) {
+        myservo.write(pos);
+        delay(15);
+    }
+}</code></pre>
+            </div>
+
+            <h2>DC мотор с драйвером L298N</h2>
+            <p>Управление DC мотором через драйвер L298N:</p>
+            
+            <div class="code-block">
+                <h3>Управление скоростью и направлением DC мотора</h3>
+                <pre class="language-cpp"><code>const int motorPin1 = 2;   // IN1 на L298N
+const int motorPin2 = 3;   // IN2 на L298N
+const int enablePin = 9;   // ENA на L298N
+
+void setup() {
+    pinMode(motorPin1, OUTPUT);
+    pinMode(motorPin2, OUTPUT);
+    pinMode(enablePin, OUTPUT);
+}
+
+void loop() {
+    // Вращение в одну сторону
+    digitalWrite(motorPin1, HIGH);
+    digitalWrite(motorPin2, LOW);
+    
+    // Постепенное увеличение скорости
+    for(int speed = 0; speed <= 255; speed++) {
+        analogWrite(enablePin, speed);
+        delay(20);
+    }
+    
+    delay(2000);
+    
+    // Вращение в другую сторону
+    digitalWrite(motorPin1, LOW);
+    digitalWrite(motorPin2, HIGH);
+    
+    delay(2000);
+    
+    // Остановка
+    digitalWrite(motorPin1, LOW);
+    digitalWrite(motorPin2, LOW);
+    
+    delay(2000);
+}</code></pre>
+            </div>
+
+            <h2>Шаговый двигатель</h2>
+            <p>Управление шаговым двигателем:</p>
+            
+            <div class="code-block">
+                <h3>Управление шаговым двигателем</h3>
+                <pre class="language-cpp"><code>#include <Stepper.h>
+
+const int stepsPerRevolution = 2048;  // Количество шагов на оборот
+
+// Подключение к пинам 8, 9, 10, 11
+Stepper myStepper(stepsPerRevolution, 8, 10, 9, 11);
+
+void setup() {
+    myStepper.setSpeed(10);  // 10 оборотов в минуту
+}
+
+void loop() {
+    // Полный оборот по часовой стрелке
+    myStepper.step(stepsPerRevolution);
+    delay(1000);
+    
+    // Полный оборот против часовой стрелки
+    myStepper.step(-stepsPerRevolution);
+    delay(1000);
+}</code></pre>
+            </div>
+
+            <h2>Управление мотором через транзистор</h2>
+            <p>Простое управление DC мотором через транзистор:</p>
+            
+            <div class="code-block">
+                <h3>Управление мотором через транзистор</h3>
+                <pre class="language-cpp"><code>const int motorPin = 9;  // Пин для управления мотором
+
+void setup() {
+    pinMode(motorPin, OUTPUT);
+}
+
+void loop() {
+    // Плавный запуск
+    for(int speed = 0; speed <= 255; speed++) {
+        analogWrite(motorPin, speed);
+        delay(10);
+    }
+    
+    delay(2000);
+    
+    // Плавная остановка
+    for(int speed = 255; speed >= 0; speed--) {
+        analogWrite(motorPin, speed);
+        delay(10);
+    }
+    
+    delay(2000);
+}</code></pre>
+            </div>
+        </section>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/components/prism-clike.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/components/prism-c.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/components/prism-cpp.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', (event) => {
+            Prism.highlightAll();
+        });
+    </script>
+</body>
+</html> 

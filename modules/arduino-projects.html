@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Проекты Arduino для начинающих</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/themes/prism-okaidia.min.css" rel="stylesheet" />
+    <style>
+        pre[class*="language-"] {
+            padding: 1.5em;
+            margin: 1em 0;
+            font-size: 16px;
+            border-radius: 8px;
+            background: #e8e8e8 !important;
+            border: 1px solid #ddd;
+        }
+        
+        code[class*="language-"] {
+            text-shadow: none;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            line-height: 1.5;
+            color: #333 !important;
+        }
+
+        /* Arduino IDE-like syntax highlighting */
+        .token.keyword {
+            color: #00979C !important;
+        }
+
+        .token.function {
+            color: #D35400 !important;
+        }
+
+        .token.number {
+            color: #00979C !important;
+        }
+
+        .token.comment {
+            color: #757575 !important;
+        }
+
+        .token.string {
+            color: #7F8C8D !important;
+        }
+
+        .token.preprocessor {
+            color: #728E00 !important;
+        }
+        
+        .project-card {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 30px;
+            background-color: #f9f9f9;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .project-card h3 {
+            margin-top: 0;
+            color: #00979C;
+            border-bottom: 2px solid #00979C;
+            padding-bottom: 8px;
+        }
+        
+        .project-image {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 15px auto;
+            border-radius: 4px;
+        }
+        
+        .difficulty {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+        
+        .beginner {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        
+        .intermediate {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+        
+        .advanced {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        
+        .materials-list {
+            background-color: #e8f4f4;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 15px 0;
+        }
+        
+        .materials-list h4 {
+            margin-top: 0;
+            color: #00979C;
+        }
+        
+        .step {
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 1px dashed #ddd;
+        }
+        
+        .step:last-child {
+            border-bottom: none;
+        }
+        
+        .step h4 {
+            color: #D35400;
+        }
+        
+        .step-image {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 15px 0;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Проекты Arduino для начинающих</h1>
+            <p>Практические проекты для изучения Arduino с пошаговыми инструкциями</p>
+        </header>
+        
+        <main>
+            <section>
+                <h2>Введение</h2>
+                <p>Лучший способ изучить Arduino — это создавать проекты. В этом модуле мы представляем несколько проектов для начинающих, которые помогут вам освоить основы работы с Arduino, датчиками и исполнительными механизмами. Каждый проект включает список необходимых компонентов, пошаговые инструкции и код.</p>
+            </section>
+            
+            <section>
+                <h2>Проект 1: Светодиодный светофор</h2>
+                
+                <div class="project-card">
+                    <h3>Светодиодный светофор</h3>
+                    <span class="difficulty beginner">Уровень: Начинающий</span>
+                    <p>Создайте простой светофор с тремя светодиодами (красный, желтый, зеленый), которые загораются в определенной последовательности, имитируя работу настоящего светофора.</p>
+                    
+                    <img src="../images/traffic-light-project.jpg" alt="Светодиодный светофор" class="project-image">
+                    
+                    <div class="materials-list">
+                        <h4>Необходимые компоненты:</h4>
+                        <ul>
+                            <li>Arduino Uno</li>
+                            <li>Макетная плата</li>
+                            <li>Красный светодиод</li>
+                            <li>Желтый светодиод</li>
+                            <li>Зеленый светодиод</li>
+                            <li>3 резистора 220 Ом</li>
+                            <li>Соединительные провода</li>
+                        </ul>
+                    </div>
+                    
+                    <h4>Пошаговая инструкция:</h4>
+                    
+                    <div class="step">
+                        <h4>Шаг 1: Подключение светодиодов</h4>
+                        <p>Подключите светодиоды к Arduino следующим образом:</p>
+                        <ul>
+                            <li>Красный светодиод: анод (+) через резистор 220 Ом к пину 10, катод (-) к GND</li>
+                            <li>Желтый светодиод: анод (+) через резистор 220 Ом к пину 9, катод (-) к GND</li>
+                            <li>Зеленый светодиод: анод (+) через резистор 220 Ом к пину 8, катод (-) к GND</li>
+                        </ul>
+                        <img src="../images/traffic-light-wiring.jpg" alt="Схема подключения светофора" class="step-image">
+                    </div>
+                    
+                    <div class="step">
+                        <h4>Шаг 2: Написание кода</h4>
+                        <p>Загрузите следующий код в Arduino:</p>
+                        <pre><code class="language-cpp">// Определение пинов для светодиодов
+const int redPin = 10;
+const int yellowPin = 9;
+const int greenPin = 8;
+
+void setup() {
+  // Настройка пинов как выходов
+  pinMode(redPin, OUTPUT);
+  pinMode(yellowPin, OUTPUT);
+  pinMode(greenPin, OUTPUT);
+}
+
+void loop() {
+  // Красный свет (стоп)
+  digitalWrite(redPin, HIGH);
+  digitalWrite(yellowPin, LOW);
+  digitalWrite(greenPin, LOW);
+  delay(3000); // Ждем 3 секунды
+  
+  // Желтый свет (приготовиться)
+  digitalWrite(redPin, LOW);
+  digitalWrite(yellowPin, HIGH);
+  digitalWrite(greenPin, LOW);
+  delay(1000); // Ждем 1 секунду
+  
+  // Зеленый свет (движение)
+  digitalWrite(redPin, LOW);
+  digitalWrite(yellowPin, LOW);
+  digitalWrite(greenPin, HIGH);
+  delay(3000); // Ждем 3 секунды
+  
+  // Желтый свет (приготовиться к остановке)
+  digitalWrite(redPin, LOW);
+  digitalWrite(yellowPin, HIGH);
+  digitalWrite(greenPin, LOW);
+  delay(1000); // Ждем 1 секунду
+  
+  // Цикл повторяется
+}</code></pre>
+                    </div>
+                    
+                    <div class="step">
+                        <h4>Шаг 3: Тестирование</h4>
+                        <p>Загрузите код в Arduino и наблюдайте, как светодиоды загораются в последовательности светофора: красный → желтый → зеленый → желтый → красный и т.д.</p>
+                    </div>
+                    
+                    <div class="step">
+                        <h4>Шаг 4: Эксперименты</h4>
+                        <p>Попробуйте изменить время задержки для разных сигналов светофора. Можно также добавить кнопку для пешеходного перехода, которая будет прерывать обычный цикл и включать красный свет.</p>
+                    </div>
+                </div>
+            </section>
+            
+            <section>
+                <h2>Проект 2: Датчик температуры и влажности</h2>
+                
+                <div class="project-card">
+                    <h3>Монитор температуры и влажности</h3>
+                    <span class="difficulty beginner">Уровень: Начинающий</span>
+                    <p>Создайте устройство для измерения температуры и влажности с выводом данных на серийный монитор.</p>
+                    
+                    <img src="../images/dht11-project.jpg" alt="Датчик температуры и влажности" class="project-image">
+                    
+                    <div class="materials-list">
+                        <h4>Необходимые компоненты:</h4>
+                        <ul>
+                            <li>Arduino Uno</li>
+                            <li>Датчик DHT11 (или DHT22)</li>
+                            <li>Резистор 10 кОм</li>
+                            <li>Макетная плата</li>
+                            <li>Соединительные провода</li>
+                        </ul>
+                    </div>
+                    
+                    <h4>Пошаговая инструкция:</h4>
+                    
+                    <div class="step">
+                        <h4>Шаг 1: Установка библиотеки</h4>
+                        <p>Установите библиотеку DHT через менеджер библиотек Arduino IDE (Скетч → Подключить библиотеку → Управлять библиотеками... → найдите "DHT sensor library" от Adafruit).</p>
+                    </div>
+                    
+                    <div class="step">
+                        <h4>Шаг 2: Подключение датчика</h4>
+                        <p>Подключите датчик DHT11 к Arduino следующим образом:</p>
+                        <ul>
+                            <li>VCC датчика к 5V Arduino</li>
+                            <li>GND датчика к GND Arduino</li>
+                            <li>DATA датчика к пину 2 Arduino</li>
+                            <li>Подключите резистор 10 кОм между VCC и DATA (подтягивающий резистор)</li>
+                        </ul>
+                        <img src="../images/dht11-wiring.jpg" alt="Схема подключения DHT11" class="step-image">
+                    </div>
+                    
+                    <div class="step">
+                        <h4>Шаг 3: Написание кода</h4>
+                        <p>Загрузите следующий код в Arduino:</p>
+                        <pre><code class="language-cpp">#include "DHT.h"
+
+#define DHTPIN 2     // Пин, к которому подключен датчик
+#define DHTTYPE DHT11   // Тип датчика (DHT11 или DHT22)
+
+DHT dht(DHTPIN, DHTTYPE);
+
+void setup() {
+  Serial.begin(9600);
+  Serial.println("Тест датчика DHT!");
+  
+  dht.begin();
+}
+
+void loop() {
+  // Ждем 2 секунды между измерениями
+  delay(2000);
+  
+  // Считываем влажность
+  float h = dht.readHumidity();
+  // Считываем температуру в градусах Цельсия
+  float t = dht.readTemperature();
+  
+  // Проверяем, корректно ли считаны данные
+  if (isnan(h) || isnan(t)) {
+    Serial.println("Ошибка чтения с датчика DHT!");
+    return;
+  }
+  
+  // Выводим данные в серийный порт
+  Serial.print("Влажность: ");
+  Serial.print(h);
+  Serial.print(" %\t");
+  Serial.print("Температура: ");
+  Serial.print(t);
+  Serial.println(" °C");
+}</code></pre>
+                    </div>
+                    
+                    <div class="step">
+                        <h4>Шаг 4: Тестирование</h4>
+                        <p>Загрузите код в Arduino и откройте серийный монитор (Инструменты → Серийный монитор). Установите скорость 9600 бод. Вы должны увидеть данные о температуре и влажности, обновляемые каждые 2 секунды.</p>
+                    </div>
+                    
+                    <div class="step">
+                        <h4>Шаг 5: Расширение проекта</h4>
+                        <p>Для расширения проекта можно добавить LCD-дисплей для отображения данных без компьютера или подключить светодиоды, которые будут загораться при определенных условиях (например, красный при высокой температуре).</p>
+                    </div>
+                </div>
+            </section>
+            
+            <section>
+                <h2>Проект 3: Ультразвуковой дальномер</h2>
+                
+                <div class="project-card">
+                    <h3>Ультразвуковой дальномер</h3>
+                    <span class="difficulty intermediate">Уровень: Средний</span>
+                    <p>Создайте устройство для измерения расстояния с помощью ультразвукового датчика HC-SR04.</p>
+                    
+                    <img src="../images/ultrasonic-project.jpg" alt="Ультразвуковой дальномер" class="project-image">
+                    
+                    <div class="materials-list">
+                        <h4>Необходимые компоненты:</h4>
+                        <ul>
+                            <li>Arduino Uno</li>
+                            <li>Ультразвуковой датчик HC-SR04</li>
+                            <li>Макетная плата</li>
+                            <li>Соединительные провода</li>
+                            <li>Зуммер (опционально)</li>
+                        </ul>
+                    </div>
+                    
+                    <h4>Пошаговая инструкция:</h4>
+                    
+                    <div class="step">
+                        <h4>Шаг 1: Подключение датчика</h4>
+                        <p>Подключите ультразвуковой датчик HC-SR04 к Arduino следующим образом:</p>
+                        <ul>
+                            <li>VCC датчика к 5V Arduino</li>
+                            <li>GND датчика к GND Arduino</li>
+                            <li>Trig датчика к пину 9 Arduino</li>
+                            <li>Echo датчика к пину 10 Arduino</li>
+                        </ul>
+                        <img src="../images/ultrasonic-wiring.jpg" alt="Схема подключения HC-SR04" class="step-image">
+                    </div>
+                    
+                    <div class="step">
+                        <h4>Шаг 2: Написание кода</h4>
+                        <p>Загрузите следующий код в Arduino:</p>
+                        <pre><code class="language-cpp">const int trigPin = 9;
+const int echoPin = 10;
+
+// Определение переменных
+long duration;
+int distance;
+
+void setup() {
+  // Настройка Serial порта
+  Serial.begin(9600);
+  // Настройка пинов
+  pinMode(trigPin, OUTPUT);
+  pinMode(echoPin, INPUT);
+}
+
+void loop() {
+  // Очищаем trigPin
+  digitalWrite(trigPin, LOW);
+  delayMicroseconds(2);
+  
+  // Устанавливаем trigPin в HIGH на 10 микросекунд
+  digitalWrite(trigPin, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(trigPin, LOW);
+  
+  // Считываем echoPin, возвращает время прохождения звуковой волны в микросекундах
+  duration = pulseIn(echoPin, HIGH);
+  
+  // Рассчитываем расстояние
+  distance = duration * 0.034 / 2; // Скорость звука: 0.034 см/мкс, делим на 2 (туда и обратно)
+  
+  // Выводим расстояние в серийный порт
+  Serial.print("Расстояние: ");
+  Serial.print(distance);
+  Serial.println(" см");
+  
+  delay(500); // Пауза между измерениями
+}</code></pre>
+                    </div>
+                    
+                    <div class="step">
+                        <h4>Шаг 3: Тестирование</h4>
+                        <p>Загрузите код в Arduino и откройте серийный монитор. Вы должны увидеть измеренное расстояние в сантиметрах. Попробуйте поместить различные предметы перед датчиком на разных расстояниях и наблюдайте за изменениями показаний.</p>
+                    </div>
+                    
+                    <div class="step">
+                        <h4>Шаг 4: Добавление звукового сигнала (опционально)</h4>
+                        <p>Если вы хотите добавить звуковой сигнал, который будет меняться в зависимости от расстояния, подключите зуммер к пину 3 и GND, затем добавьте следующий код в функцию loop():</p>
+                        <pre><code class="language-cpp">// Добавьте в начало скетча
+const int buzzerPin = 3;
+
+// Добавьте в setup()
+pinMode(buzzerPin, OUTPUT);
+
+// Добавьте в конец loop() перед delay(500)
+if (distance < 20) {
+  // Если расстояние меньше 20 см, издаем звуковой сигнал
+  // Частота и длительность сигнала зависят от расстояния
+  int frequency = map(distance, 0, 20, 2000, 500);
+  tone(buzzerPin, frequency, 100);
+} else {
+  // Если расстояние больше 20 см, выключаем звук
+  noTone(buzzerPin);
+}</code></pre>
+                    </div>
+                </div>
+            </section>
+            
+            <section>
+                <h2>Заключение</h2>
+                <p>Эти проекты помогут вам начать работу с Arduino и освоить основные принципы работы с различными компонентами. По мере приобретения опыта вы сможете создавать более сложные проекты, комбинируя различные датчики и исполнительные механизмы.</p>
+                <p>Не бойтесь экспериментировать и модифицировать проекты под свои нужды. Именно так вы сможете лучше понять, как работает Arduino и электроника в целом.</p>
+            </section>
+        </main>
+        
+        <footer>
+            <p>&copy; 2023 ArdLearn. Все права защищены.</p>
+        </footer>
+    </div>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/components/prism-c.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/components/prism-cpp.min.js"></script>
+</body>
+</html> 

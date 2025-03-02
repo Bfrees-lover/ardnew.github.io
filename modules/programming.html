@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Программирование Arduino</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/themes/prism-okaidia.min.css" rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: #f5f5f5;
+        }
+
+        .header {
+            background: #00979D;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .content {
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .section {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .code-block {
+            background: #f8f8f8;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+            font-family: monospace;
+        }
+
+        .test-container {
+            background: #f0f0f0;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 40px;
+        }
+
+        .question {
+            margin-bottom: 20px;
+        }
+
+        .options label {
+            display: block;
+            margin: 10px 0;
+            cursor: pointer;
+        }
+
+        .submit-btn {
+            background: #00979D;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .home-btn {
+            display: inline-block;
+            background: #00979D;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+
+        .tip {
+            background: #e8f5e9;
+            padding: 10px;
+            border-left: 4px solid #4caf50;
+            margin: 10px 0;
+        }
+
+        pre[class*="language-"] {
+            padding: 1.5em;
+            margin: 1em 0;
+            font-size: 16px;
+            border-radius: 8px;
+            background: #e8e8e8 !important;
+            border: 1px solid #ddd;
+        }
+        
+        code[class*="language-"] {
+            text-shadow: none;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            line-height: 1.5;
+            color: #333 !important;
+        }
+
+        /* Arduino IDE-like syntax highlighting */
+        .token.keyword {
+            color: #00979C !important;
+        }
+
+        .token.function {
+            color: #D35400 !important;
+        }
+
+        .token.number {
+            color: #00979C !important;
+        }
+
+        .token.comment {
+            color: #757575 !important;
+        }
+
+        .token.string {
+            color: #7F8C8D !important;
+        }
+
+        .token.preprocessor {
+            color: #728E00 !important;
+        }
+
+        .token.constant {
+            color: #00979C !important;
+        }
+
+        .token.operator {
+            color: #434F54 !important;
+        }
+
+        .content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        section {
+            margin-bottom: 40px;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <a href="../index.html" class="back-button">← Назад</a>
+        <h1>Программирование Arduino</h1>
+        <p>Основы программирования на C++ для Arduino</p>
+    </header>
+
+    <div class="content">
+        <a href="../index.html" class="home-btn">На главную</a>
+
+        <section>
+            <h2>Переменные и типы данных</h2>
+            <p>Основные типы данных и их использование:</p>
+            
+            <div class="code-block">
+                <h3>Примеры объявления переменных</h3>
+                <pre class="language-cpp"><code>// Целочисленные типы
+int counter = 0;          // -32768 до 32767
+byte temperature = 25;    // 0 до 255
+long bigNumber = 50000;   // большие числа
+
+// Числа с плавающей точкой
+float voltage = 5.5;
+double pi = 3.14159265359;
+
+// Логический тип
+boolean isOn = true;
+
+// Символы и строки
+char symbol = 'A';
+String message = "Hello Arduino";</code></pre>
+            </div>
+
+            <h2>Условные операторы</h2>
+            <p>Использование условных операторов if-else:</p>
+            
+            <div class="code-block">
+                <h3>Примеры условий</h3>
+                <pre class="language-cpp"><code>int sensorValue = analogRead(A0);
+
+// Простое условие
+if (sensorValue > 500) {
+    digitalWrite(13, HIGH);
+} else {
+    digitalWrite(13, LOW);
+}
+
+// Множественные условия
+if (sensorValue < 200) {
+    // Низкий уровень
+    digitalWrite(2, HIGH);
+} else if (sensorValue < 800) {
+    // Средний уровень
+    digitalWrite(3, HIGH);
+} else {
+    // Высокий уровень
+    digitalWrite(4, HIGH);
+}</code></pre>
+            </div>
+
+            <h2>Циклы</h2>
+            <p>Различные типы циклов:</p>
+            
+            <div class="code-block">
+                <h3>Примеры циклов</h3>
+                <pre class="language-cpp"><code>// Цикл for
+for (int i = 0; i < 10; i++) {
+    digitalWrite(ledPin, HIGH);
+    delay(100);
+    digitalWrite(ledPin, LOW);
+    delay(100);
+}
+
+// Цикл while
+int count = 0;
+while (count < 5) {
+    digitalWrite(ledPin, HIGH);
+    delay(1000);
+    digitalWrite(ledPin, LOW);
+    delay(1000);
+    count++;
+}
+
+// Цикл do-while
+do {
+    sensorValue = analogRead(A0);
+    delay(100);
+} while (sensorValue > 100);</code></pre>
+            </div>
+
+            <h2>Функции</h2>
+            <p>Создание и использование пользовательских функций:</p>
+            
+            <div class="code-block">
+                <h3>Примеры функций</h3>
+                <pre class="language-cpp"><code>// Функция без параметров и возвращаемого значения
+void blinkLED() {
+    digitalWrite(13, HIGH);
+    delay(1000);
+    digitalWrite(13, LOW);
+    delay(1000);
+}
+
+// Функция с параметрами
+void blinkTimes(int pin, int times) {
+    for (int i = 0; i < times; i++) {
+        digitalWrite(pin, HIGH);
+        delay(500);
+        digitalWrite(pin, LOW);
+        delay(500);
+    }
+}
+
+// Функция с возвращаемым значением
+float readVoltage(int pin) {
+    int sensorValue = analogRead(pin);
+    float voltage = sensorValue * (5.0 / 1023.0);
+    return voltage;
+}
+
+void setup() {
+    pinMode(13, OUTPUT);
+    Serial.begin(9600);
+}
+
+void loop() {
+    blinkLED();  // Вызов простой функции
+    blinkTimes(13, 3);  // Вызов функции с параметрами
+    
+    float voltage = readVoltage(A0);  // Получение значения из функции
+    Serial.println(voltage);
+    
+    delay(1000);
+}</code></pre>
+            </div>
+        </section>
+
+        <div class="test-container">
+            <h2>Проверьте свои знания</h2>
+            <div class="question">
+                <p>1. Какая функция выполняется один раз при запуске Arduino?</p>
+                <div class="options">
+                    <label>
+                        <input type="radio" name="q1" value="1"> loop()
+                    </label>
+                    <label>
+                        <input type="radio" name="q1" value="2"> setup()
+                    </label>
+                    <label>
+                        <input type="radio" name="q1" value="3"> start()
+                    </label>
+                </div>
+            </div>
+
+            <div class="question">
+                <p>2. Какой тип данных используется для хранения дробных чисел?</p>
+                <div class="options">
+                    <label>
+                        <input type="radio" name="q2" value="1"> int
+                    </label>
+                    <label>
+                        <input type="radio" name="q2" value="2"> float
+                    </label>
+                    <label>
+                        <input type="radio" name="q2" value="3"> char
+                    </label>
+                </div>
+            </div>
+
+            <div class="question">
+                <p>3. Что делает ключевое слово const?</p>
+                <div class="options">
+                    <label>
+                        <input type="radio" name="q3" value="1"> Создает переменную
+                    </label>
+                    <label>
+                        <input type="radio" name="q3" value="2"> Запрещает изменение значения
+                    </label>
+                    <label>
+                        <input type="radio" name="q3" value="3"> Удаляет переменную
+                    </label>
+                </div>
+            </div>
+
+            <button class="submit-btn" onclick="checkAnswers()">Проверить ответы</button>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/components/prism-clike.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/components/prism-c.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/components/prism-cpp.min.js"></script>
+    <script>
+        function checkAnswers() {
+            const correctAnswers = {
+                q1: "2",
+                q2: "2",
+                q3: "2"
+            };
+
+            let score = 0;
+            let total = Object.keys(correctAnswers).length;
+
+            for (let question in correctAnswers) {
+                const selected = document.querySelector(`input[name="${question}"]:checked`);
+                if (selected && selected.value === correctAnswers[question]) {
+                    score++;
+                }
+            }
+
+            alert(`Ваш результат: ${score} из ${total} правильных ответов`);
+        }
+
+        document.addEventListener('DOMContentLoaded', (event) => {
+            Prism.highlightAll();
+        });
+    </script>
+</body>
+</html> 

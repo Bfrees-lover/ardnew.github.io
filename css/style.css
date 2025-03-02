@@ -1,0 +1,311 @@
+/* Общие стили */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Roboto', sans-serif;
+    background: #f5f5f5;
+    line-height: 1.6;
+}
+
+/* Шапка */
+.header {
+    background: #00979D;
+    color: white;
+    padding: 20px;
+    text-align: center;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+/* Основной контент */
+.content {
+    max-width: 800px;
+    margin: 40px auto;
+    padding: 0 20px;
+}
+
+/* Секции */
+.section {
+    background: white;
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+/* Блоки кода */
+.code-block {
+    background: #f8f8f8;
+    padding: 15px;
+    border-radius: 5px;
+    margin: 10px 0;
+    font-family: monospace;
+    overflow-x: auto;
+}
+
+/* Тесты */
+.test-container {
+    background: #f0f0f0;
+    padding: 20px;
+    border-radius: 10px;
+    margin-top: 40px;
+}
+
+.question {
+    margin-bottom: 20px;
+}
+
+.options label {
+    display: block;
+    margin: 10px 0;
+    cursor: pointer;
+    padding: 10px;
+    background: white;
+    border-radius: 5px;
+    transition: background 0.3s;
+}
+
+.options label:hover {
+    background: #e8e8e8;
+}
+
+/* Кнопки */
+.submit-btn, .home-btn {
+    background: #00979D;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+    transition: background 0.3s;
+}
+
+.submit-btn:hover, .home-btn:hover {
+    background: #007A7C;
+}
+
+/* Модули на главной странице */
+.modules-container {
+    max-width: 1200px;
+    margin: 40px auto;
+    padding: 0 20px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+.module-card {
+    background: white;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease;
+}
+
+.module-card:hover {
+    transform: translateY(-5px);
+}
+
+.module-card h2 {
+    color: #00979D;
+    margin-bottom: 15px;
+}
+
+.module-card p {
+    color: #666;
+    margin-bottom: 20px;
+}
+
+/* Компоненты */
+.component-card {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 15px;
+    margin: 10px 0;
+    background: white;
+}
+
+.component-card h3 {
+    color: #00979D;
+    margin-bottom: 10px;
+}
+
+.component-specs {
+    background: #f8f8f8;
+    padding: 10px;
+    border-radius: 5px;
+    margin: 10px 0;
+}
+
+.tip {
+    background: #e8f5e9;
+    padding: 10px;
+    border-left: 4px solid #4caf50;
+    margin: 10px 0;
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+    .modules-container {
+        grid-template-columns: 1fr;
+    }
+    
+    .content {
+        padding: 0 10px;
+    }
+}
+
+.components-panel {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin: 10px 0;
+    padding: 10px;
+    background: #f0f0f0;
+    border-radius: 5px;
+}
+
+.component-btn {
+    flex: 1;
+    min-width: 150px;
+}
+
+.example-btn {
+    background: #4CAF50;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 12px;
+    margin: 2px;
+}
+
+.example-btn:hover {
+    background: #45a049;
+}
+
+.simulation-view {
+    position: relative;
+    background: #f8f8f8;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+/* Добавьте этот CSS в ваш файл стилей (css/style.css) */
+.lightning {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 30px;
+    height: 30px;
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23FFD700"><path d="M7 2v11h3v9l7-12h-4l4-8z"/></svg>');
+    background-size: contain;
+    background-repeat: no-repeat;
+    cursor: pointer;
+}
+
+.bounce {
+    animation: bounce 2s infinite;
+}
+
+@keyframes bounce {
+    0%, 20%, 50%, 80%, 100% {
+        transform: translateY(0);
+    }
+    40% {
+        transform: translateY(-15px);
+    }
+    60% {
+        transform: translateY(-7px);
+    }
+}
+
+.modules-container a .lightning {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 30px;
+    height: 30px;
+    z-index: 1000;
+}
+
+.corner-icons {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    display: flex;
+    gap: 15px;
+    align-items: center;
+}
+
+.question-mark {
+    width: 30px;
+    height: 30px;
+    background: #FFD700;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 20px;
+    color: #333;
+    cursor: pointer;
+}
+
+.lightning {
+    width: 30px;
+    height: 30px;
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23FFD700"><path d="M7 2v11h3v9l7-12h-4l4-8z"/></svg>');
+    background-size: contain;
+    background-repeat: no-repeat;
+}
+
+.back-button {
+    position: absolute;
+    left: 20px;
+    top: 20px;
+    color: white;
+    text-decoration: none;
+    font-size: 18px;
+}
+
+.back-button:hover {
+    text-decoration: underline;
+}
+
+.code-templates {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.template-card {
+    background: white;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.template-card h2 {
+    color: #333;
+    margin-top: 0;
+}
+
+.template-card pre {
+    background: #f5f5f5;
+    border-radius: 4px;
+    padding: 15px;
+    overflow-x: auto;
+}
+
+.template-card code {
+    font-family: 'Consolas', 'Monaco', monospace;
+}

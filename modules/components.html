@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Компоненты Arduino</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/themes/prism-okaidia.min.css" rel="stylesheet" />
+    <style>
+        pre[class*="language-"] {
+            padding: 1.5em;
+            margin: 1em 0;
+            font-size: 16px;
+            border-radius: 8px;
+            background: #e8e8e8 !important;
+            border: 1px solid #ddd;
+        }
+        
+        code[class*="language-"] {
+            text-shadow: none;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            line-height: 1.5;
+            color: #333 !important;
+        }
+
+        /* Arduino IDE-like syntax highlighting */
+        .token.keyword {
+            color: #00979C !important;
+        }
+
+        .token.function {
+            color: #D35400 !important;
+        }
+
+        .token.number {
+            color: #00979C !important;
+        }
+
+        .token.comment {
+            color: #757575 !important;
+        }
+
+        .token.string {
+            color: #7F8C8D !important;
+        }
+
+        .token.preprocessor {
+            color: #728E00 !important;
+        }
+
+        .token.constant {
+            color: #00979C !important;
+        }
+
+        .token.operator {
+            color: #434F54 !important;
+        }
+
+        .content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        section {
+            margin-bottom: 40px;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <a href="../index.html" class="back-button">← Назад</a>
+        <h1>Компоненты Arduino</h1>
+        <p>Работа с различными компонентами и модулями</p>
+    </header>
+
+    <div class="content">
+        <section>
+            <h2>Модуль часов реального времени DS3231</h2>
+            <p>Работа с часами реального времени:</p>
+            
+            <div class="code-block">
+                <h3>Чтение и установка времени</h3>
+                <pre class="language-cpp"><code>#include <Wire.h>
+#include <RTClib.h>
+
+RTC_DS3231 rtc;
+
+void setup() {
+    Serial.begin(9600);
+    
+    if (!rtc.begin()) {
+        Serial.println("Не удалось найти RTC");
+        while (1);
+    }
+
+    // Установка времени (только при первой загрузке)
+    // rtc.adjust(DateTime(2023, 12, 31, 23, 59, 50));
+}
+
+void loop() {
+    DateTime now = rtc.now();
+    
+    Serial.print(now.year(), DEC);
+    Serial.print('/');
+    Serial.print(now.month(), DEC);
+    Serial.print('/');
+    Serial.print(now.day(), DEC);
+    Serial.print(" ");
+    Serial.print(now.hour(), DEC);
+    Serial.print(':');
+    Serial.print(now.minute(), DEC);
+    Serial.print(':');
+    Serial.println(now.second(), DEC);
+    
+    delay(1000);
+}</code></pre>
+            </div>
+
+            <h2>Модуль SD карты</h2>
+            <p>Запись и чтение данных с SD карты:</p>
+            
+            <div class="code-block">
+                <h3>Работа с файлами на SD карте</h3>
+                <pre class="language-cpp"><code>#include <SPI.h>
+#include <SD.h>
+
+const int chipSelect = 10;
+File dataFile;
+
+void setup() {
+    Serial.begin(9600);
+    
+    if (!SD.begin(chipSelect)) {
+        Serial.println("Ошибка инициализации SD карты!");
+        return;
+    }
+    Serial.println("SD карта инициализирована.");
+
+    // Запись данных
+    dataFile = SD.open("data.txt", FILE_WRITE);
+    if (dataFile) {
+        dataFile.println("Время,Температура");
+        dataFile.close();
+    }
+}
+
+void loop() {
+    // Запись новых данных
+    dataFile = SD.open("data.txt", FILE_WRITE);
+    if (dataFile) {
+        dataFile.print(millis());
+        dataFile.print(",");
+        dataFile.println(analogRead(A0));
+        dataFile.close();
+    }
+    
+    delay(1000);
+}</code></pre>
+            </div>
+
+            <h2>Модуль Bluetooth HC-05</h2>
+            <p>Беспроводная связь через Bluetooth:</p>
+            
+            <div class="code-block">
+                <h3>Обмен данными через Bluetooth</h3>
+                <pre class="language-cpp"><code>#include <SoftwareSerial.h>
+
+SoftwareSerial bluetooth(2, 3); // RX, TX
+
+void setup() {
+    Serial.begin(9600);
+    bluetooth.begin(9600);
+}
+
+void loop() {
+    // Отправка данных на устройство
+    if (Serial.available()) {
+        bluetooth.write(Serial.read());
+    }
+    
+    // Получение данных с устройства
+    if (bluetooth.available()) {
+        Serial.write(bluetooth.read());
+    }
+}</code></pre>
+            </div>
+
+            <h2>Модуль RFID RC522</h2>
+            <p>Работа с RFID метками:</p>
+            
+            <div class="code-block">
+                <h3>Чтение RFID меток</h3>
+                <pre class="language-cpp"><code>#include <SPI.h>
+#include <MFRC522.h>
+
+#define SS_PIN 10
+#define RST_PIN 9
+
+MFRC522 rfid(SS_PIN, RST_PIN);
+
+void setup() {
+    Serial.begin(9600);
+    SPI.begin();
+    rfid.PCD_Init();
+}
+
+void loop() {
+    // Проверяем наличие новой карты
+    if (!rfid.PICC_IsNewCardPresent())
+        return;
+
+    // Читаем серийный номер карты
+    if (!rfid.PICC_ReadCardSerial())
+        return;
+
+    Serial.print("UID метки: ");
+    for (byte i = 0; i < rfid.uid.size; i++) {
+        Serial.print(rfid.uid.uidByte[i] < 0x10 ? " 0" : " ");
+        Serial.print(rfid.uid.uidByte[i], HEX);
+    }
+    Serial.println();
+
+    rfid.PICC_HaltA();
+    rfid.PCD_StopCrypto1();
+}</code></pre>
+            </div>
+        </section>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/components/prism-clike.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/components/prism-c.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/components/prism-cpp.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', (event) => {
+            Prism.highlightAll();
+        });
+    </script>
+</body>
+</html> 

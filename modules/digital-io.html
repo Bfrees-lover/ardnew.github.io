@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Цифровые входы и выходы Arduino</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/themes/prism-okaidia.min.css" rel="stylesheet" />
+    <style>
+        pre[class*="language-"] {
+            padding: 1.5em;
+            margin: 1em 0;
+            font-size: 16px;
+            border-radius: 8px;
+            background: #e8e8e8 !important;
+            border: 1px solid #ddd;
+        }
+        
+        code[class*="language-"] {
+            text-shadow: none;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            line-height: 1.5;
+            color: #333 !important;
+        }
+
+        /* Arduino IDE-like syntax highlighting */
+        .token.keyword {
+            color: #00979C !important;
+        }
+
+        .token.function {
+            color: #D35400 !important;
+        }
+
+        .token.number {
+            color: #00979C !important;
+        }
+
+        .token.comment {
+            color: #757575 !important;
+        }
+
+        .token.string {
+            color: #7F8C8D !important;
+        }
+
+        .token.preprocessor {
+            color: #728E00 !important;
+        }
+
+        .token.constant {
+            color: #00979C !important;
+        }
+
+        .token.operator {
+            color: #434F54 !important;
+        }
+
+        .content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        section {
+            margin-bottom: 40px;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <a href="../index.html" class="back-button">← Назад</a>
+        <h1>Цифровые входы и выходы</h1>
+        <p>Работа с цифровыми пинами, кнопками и светодиодами</p>
+    </header>
+
+    <div class="content">
+        <section>
+            <h2>Управление светодиодом</h2>
+            <p>Базовые примеры работы со светодиодом:</p>
+            
+            <div class="code-block">
+                <h3>Мигающий светодиод</h3>
+                <pre class="language-cpp"><code>const int ledPin = 13;  // Пин светодиода
+
+void setup() {
+    pinMode(ledPin, OUTPUT);  // Настраиваем пин как выход
+}
+
+void loop() {
+    digitalWrite(ledPin, HIGH);  // Включаем светодиод
+    delay(1000);                 // Ждем секунду
+    digitalWrite(ledPin, LOW);   // Выключаем светодиод
+    delay(1000);                 // Ждем секунду
+}</code></pre>
+            </div>
+
+            <h2>Работа с кнопкой</h2>
+            <p>Чтение состояния кнопки:</p>
+            
+            <div class="code-block">
+                <h3>Кнопка с подтягивающим резистором</h3>
+                <pre class="language-cpp"><code>const int buttonPin = 2;  // Пин кнопки
+const int ledPin = 13;    // Пин светодиода
+int buttonState = 0;      // Переменная для хранения состояния кнопки
+
+void setup() {
+    pinMode(ledPin, OUTPUT);      // Светодиод - выход
+    pinMode(buttonPin, INPUT);    // Кнопка - вход
+}
+
+void loop() {
+    // Читаем состояние кнопки
+    buttonState = digitalRead(buttonPin);
+
+    // Если кнопка нажата
+    if (buttonState == HIGH) {
+        digitalWrite(ledPin, HIGH);  // Включаем светодиод
+    } else {
+        digitalWrite(ledPin, LOW);   // Выключаем светодиод
+    }
+}</code></pre>
+            </div>
+
+            <h2>Устранение дребезга контактов</h2>
+            <p>Программное устранение дребезга контактов кнопки:</p>
+            
+            <div class="code-block">
+                <h3>Кнопка с защитой от дребезга</h3>
+                <pre class="language-cpp"><code>const int buttonPin = 2;     // Пин кнопки
+const int ledPin = 13;      // Пин светодиода
+
+int ledState = HIGH;         // Состояние светодиода
+int buttonState;            // Текущее состояние кнопки
+int lastButtonState = LOW;   // Предыдущее состояние кнопки
+
+// Переменные для устранения дребезга
+unsigned long lastDebounceTime = 0;
+unsigned long debounceDelay = 50;    // Задержка для устранения дребезга
+
+void setup() {
+    pinMode(buttonPin, INPUT);
+    pinMode(ledPin, OUTPUT);
+    digitalWrite(ledPin, ledState);
+}
+
+void loop() {
+    // Читаем состояние кнопки
+    int reading = digitalRead(buttonPin);
+
+    // Если состояние изменилось, сбрасываем таймер
+    if (reading != lastButtonState) {
+        lastDebounceTime = millis();
+    }
+
+    // Проверяем, прошло ли достаточно времени
+    if ((millis() - lastDebounceTime) > debounceDelay) {
+        if (reading != buttonState) {
+            buttonState = reading;
+            if (buttonState == HIGH) {
+                ledState = !ledState;
+            }
+        }
+    }
+
+    digitalWrite(ledPin, ledState);
+    lastButtonState = reading;
+}</code></pre>
+            </div>
+
+            <h2>Несколько светодиодов</h2>
+            <p>Управление несколькими светодиодами:</p>
+            
+            <div class="code-block">
+                <h3>Бегущий огонь</h3>
+                <pre class="language-cpp"><code>// Массив пинов светодиодов
+const int ledPins[] = {2, 3, 4, 5, 6};
+const int numLeds = 5;
+
+void setup() {
+    // Настраиваем все пины как выходы
+    for (int i = 0; i < numLeds; i++) {
+        pinMode(ledPins[i], OUTPUT);
+    }
+}
+
+void loop() {
+    // Зажигаем светодиоды по очереди
+    for (int i = 0; i < numLeds; i++) {
+        digitalWrite(ledPins[i], HIGH);
+        delay(100);
+        digitalWrite(ledPins[i], LOW);
+    }
+    
+    // Зажигаем в обратном порядке
+    for (int i = numLeds - 2; i > 0; i--) {
+        digitalWrite(ledPins[i], HIGH);
+        delay(100);
+        digitalWrite(ledPins[i], LOW);
+    }
+}</code></pre>
+            </div>
+        </section>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/components/prism-clike.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/components/prism-c.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/components/prism-cpp.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', (event) => {
+            Prism.highlightAll();
+        });
+    </script>
+</body>
+</html> 
